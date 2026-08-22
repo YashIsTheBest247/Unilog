@@ -22,7 +22,7 @@ export function Header() {
     <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-5">
       {/* A floating pill rather than a full-bleed bar: it keeps the canvas
           visible around it and reads as a control surface, not chrome. */}
-      <div className="mx-auto flex h-14 max-w-[1400px] items-center gap-2 rounded-full border border-[var(--hairline)] bg-[color-mix(in_srgb,var(--s-card)_88%,transparent)] px-3 shadow-[var(--shadow-float)] backdrop-blur-xl sm:h-16 sm:gap-4 sm:px-5">
+      <div className="mx-auto flex h-14 max-w-[1400px] items-center gap-1.5 rounded-full border border-[var(--hairline)] bg-[color-mix(in_srgb,var(--s-card)_88%,transparent)] px-2.5 shadow-[var(--shadow-float)] backdrop-blur-xl transition-shadow sm:h-16 sm:gap-4 sm:px-5">
         <Link
           href="/"
           className="focus-ring flex shrink-0 items-center gap-2.5 rounded-full pr-2"
@@ -59,20 +59,16 @@ export function Header() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
-          <span className="hidden items-center gap-2 rounded-full border border-[var(--hairline)] px-3.5 py-2 lg:flex">
-            <span className="size-1.5 rounded-full bg-verify-400" />
-            <span className="font-mono text-[12px] text-mist-400">
-              UniHack 2026
-            </span>
-          </span>
-
           <ThemeToggle />
 
           <Link
             href="/#console"
-            className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-mist-100 px-4 py-2.5 text-[14px] font-semibold text-[var(--s-card)] transition-opacity hover:opacity-88 sm:px-5"
+            className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-mist-100 px-3.5 py-2.5 text-[14px] font-semibold text-[var(--s-card)] transition-opacity hover:opacity-88 sm:px-5"
           >
-            Run enrichment
+            {/* The label is the first thing to go on a narrow phone;
+                the arrow alone still reads as the primary action. */}
+            <span className="hidden sm:inline">Run enrichment</span>
+            <span className="sm:hidden">Enrich</span>
             <Arrow />
           </Link>
         </div>

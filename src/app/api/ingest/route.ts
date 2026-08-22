@@ -120,7 +120,7 @@ async function ingestUrl(target: string): Promise<IngestedSource> {
   const response = await fetch(parsed.toString(), {
     headers: {
       "User-Agent":
-        "Mozilla/5.0 (compatible; UnilogProductIntelligence/0.1; +https://unilogcorp.com)",
+        "Mozilla/5.0 (compatible; UnifyProductIntelligence/0.1)",
       Accept: "text/html,application/xhtml+xml,application/pdf",
     },
     redirect: "follow",

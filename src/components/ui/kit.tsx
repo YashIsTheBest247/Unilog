@@ -169,7 +169,7 @@ export function StepCard({
   preview?: React.ReactNode;
 }) {
   return (
-    <article className="panel flex flex-col gap-4 p-5">
+    <article className="panel flex h-full flex-col gap-4 p-5">
       {preview && (
         <div className="panel-flat grid min-h-[7.5rem] place-items-center overflow-hidden p-4">
           {preview}

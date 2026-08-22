@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Unilog wordmark, rebuilt as type so it stays crisp at any size and
- * inherits the theme. "uni" carries the accent; "log" stays neutral.
+ * The Unify wordmark, set as type so it stays crisp at any size and
+ * inherits the theme. "uni" carries the accent; "fy" stays neutral.
  */
 export function Logo({ className }: { className?: string }) {
   return (
@@ -13,7 +13,7 @@ export function Logo({ className }: { className?: string }) {
       )}
     >
       <span className="text-brand-500">uni</span>
-      <span className="text-mist-100">log</span>
+      <span className="text-mist-100">fy</span>
     </span>
   );
 }

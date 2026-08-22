@@ -98,11 +98,12 @@ export function AskPanel() {
   const [samples, setSamples] = useState<Sample[]>([]);
   const [selected, setSelected] = useState<Sample | null>(null);
   const [attached, setAttached] = useState<AttachedSource[]>([]);
-  const [question, setQuestion] = useState(PRESETS[0]);
+  const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<Answer | null>(null);
   const [pool, setPool] = useState<PoolSource[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSamples, setShowSamples] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -110,9 +111,7 @@ export function AskPanel() {
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
-        const list: Sample[] = data.samples ?? [];
-        setSamples(list);
-        setSelected((s) => s ?? list[0] ?? null);
+        setSamples(data.samples ?? []);
       })
       .catch(() => undefined);
     return () => {
@@ -161,62 +160,99 @@ export function AskPanel() {
 
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
-      {/* Left: what it reads ------------------------------------------ */}
+      {/* Left: what it reads.
+          The user's own documents lead. The bundled sets sit behind a
+          disclosure and vanish once anything has been attached. ------ */}
       <div className="space-y-5">
-        <Panel className="overflow-hidden">
-          <PanelHeader
-            title="Document set"
-            hint="Pick a SKU to read its cached evidence, or attach your own"
-            right={
-              <Badge tone="neutral">
-                {(selected?.sourceCount ?? 0) + attached.length} docs
-              </Badge>
-            }
-          />
-          <ul className="divide-y divide-[var(--hairline)]">
-            {samples.map((s) => {
-              const active = selected?.id === s.id;
-              return (
-                <li key={s.id}>
-                  <button
-                    type="button"
-                    onClick={() => setSelected(active ? null : s)}
-                    className={cn(
-                      "focus-ring w-full px-5 py-3 text-left transition-colors",
-                      active ? "bg-brand-500/[0.07]" : "tint-hover",
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={cn(
-                          "size-3 shrink-0 rounded-[4px] border",
-                          active
-                            ? "border-brand-500 bg-brand-500"
-                            : "border-[var(--hairline-strong)]",
-                        )}
-                      />
-                      <span className="truncate text-[13px] font-semibold text-mist-100">
-                        {s.brand}
-                      </span>
-                      <span className="truncate font-mono text-[11px] text-mist-500">
-                        {s.mpn}
-                      </span>
-                      <Badge tone="neutral" className="ml-auto shrink-0">
-                        {s.sourceCount}
-                      </Badge>
-                    </div>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </Panel>
-
         <SourceIngest
           sources={attached}
           onChange={setAttached}
           disabled={busy}
         />
+
+        {samples.length > 0 && attached.length === 0 && (
+          <Panel className="overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setShowSamples((v) => !v)}
+              aria-expanded={showSamples}
+              className="focus-ring flex w-full items-center gap-3 px-5 py-4 text-left transition-colors tint-hover"
+            >
+              <div className="min-w-0">
+                <h3 className="text-[15px] font-bold tracking-[-0.01em] text-mist-100">
+                  No document to hand?
+                </h3>
+                <p className="mt-0.5 text-[13px] text-mist-500">
+                  {selected
+                    ? `Reading ${selected.brand} ${selected.mpn}`
+                    : `Read one of ${samples.length} bundled sample sets`}
+                </p>
+              </div>
+              {selected && (
+                <Badge tone="brand" className="shrink-0">
+                  {selected.sourceCount} docs
+                </Badge>
+              )}
+              <svg
+                viewBox="0 0 16 16"
+                aria-hidden
+                className={cn(
+                  "ml-auto size-4 shrink-0 text-mist-400 transition-transform duration-200",
+                  showSamples && "rotate-180",
+                )}
+              >
+                <path
+                  d="m4 6 4 4 4-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+
+            {showSamples && (
+              <ul className="animate-rise divide-y divide-[var(--hairline)] border-t border-[var(--hairline)]">
+                {samples.map((s) => {
+                  const active = selected?.id === s.id;
+                  return (
+                    <li key={s.id}>
+                      <button
+                        type="button"
+                        onClick={() => setSelected(active ? null : s)}
+                        className={cn(
+                          "focus-ring w-full px-5 py-3 text-left transition-colors",
+                          active ? "bg-brand-500/[0.07]" : "tint-hover",
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={cn(
+                              "size-3 shrink-0 rounded-[4px] border",
+                              active
+                                ? "border-brand-500 bg-brand-500"
+                                : "border-[var(--hairline-strong)]",
+                            )}
+                          />
+                          <span className="truncate text-[13px] font-semibold text-mist-100">
+                            {s.brand}
+                          </span>
+                          <span className="truncate font-mono text-[11px] text-mist-500">
+                            {s.mpn}
+                          </span>
+                          <Badge tone="neutral" className="ml-auto shrink-0">
+                            {s.sourceCount}
+                          </Badge>
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Panel>
+        )}
       </div>
 
       {/* Right: the question and the answer --------------------------- */}
@@ -265,6 +301,15 @@ export function AskPanel() {
             </div>
           </form>
         </Panel>
+
+        {!selected && attached.length === 0 && !answer && (
+          <Panel className="px-5 py-10 text-center">
+            <p className="text-[14px] text-mist-400">
+              Attach a datasheet, fetch a product URL, or paste a spec block —
+              then ask it anything.
+            </p>
+          </Panel>
+        )}
 
         {error && (
           <div

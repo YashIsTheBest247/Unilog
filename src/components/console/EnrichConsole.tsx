@@ -36,7 +36,8 @@ export function EnrichConsole() {
   const [samples, setSamples] = useState<Sample[]>([]);
   const [attached, setAttached] = useState<AttachedSource[]>([]);
   const [inspecting, setInspecting] = useState<AttributeValue | null>(null);
-  const { save, records } = useWorkspace();
+  const { save, records, hasOwn } = useWorkspace();
+  const [showSamples, setShowSamples] = useState(false);
   const savedId = useRef<string | null>(null);
 
   useEffect(() => {
@@ -45,9 +46,7 @@ export function EnrichConsole() {
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
-        const list: Sample[] = data.samples ?? [];
-        setSamples(list);
-        setForm((f) => (f.mpn ? f : (list[0] ?? EMPTY)));
+        setSamples(data.samples ?? []);
       })
       .catch(() => {
         /* The form still works by hand if the bench cannot load. */
@@ -118,13 +117,13 @@ export function EnrichConsole() {
                   label="Brand"
                   value={form.brand}
                   onChange={(v) => setForm({ ...form, brand: v })}
-                  placeholder="Apollo"
+                  placeholder="Manufacturer"
                 />
                 <Field
                   label="Manufacturer part number"
                   value={form.mpn}
                   onChange={(v) => setForm({ ...form, mpn: v })}
-                  placeholder="77C-143-01"
+                  placeholder="Part number"
                   mono
                 />
               </div>
@@ -133,7 +132,7 @@ export function EnrichConsole() {
                 label="Description"
                 value={form.description}
                 onChange={(v) => setForm({ ...form, description: v })}
-                placeholder="BALL VLV 1/2 3PC SS FP LKG HDL"
+                placeholder="e.g. BALL VLV 1/2 3PC SS FP — paste the supplier line as-is"
                 mono
               />
 
@@ -141,7 +140,7 @@ export function EnrichConsole() {
                 label="Supplier category"
                 value={form.supplierCategory ?? ""}
                 onChange={(v) => setForm({ ...form, supplierCategory: v })}
-                placeholder="VALVES & ACTUATORS"
+                placeholder="Supplier category"
                 optional
               />
 
@@ -172,14 +171,46 @@ export function EnrichConsole() {
             disabled={running}
           />
 
-          {/* Demo bench ---------------------------------------------- */}
-          {samples.length > 0 && (
+          {/* Sample rows ---------------------------------------------
+              Collapsed by default and gone for good once the user has
+              enriched anything of their own. An on-ramp, not furniture. */}
+          {samples.length > 0 && !hasOwn && (
             <Panel className="overflow-hidden">
-              <PanelHeader
-                title="Sample rows"
-                hint="Bundled examples for trying the engine without a document of your own"
-              />
-              <ul className="divide-y divide-[var(--hairline)]">
+              <button
+                type="button"
+                onClick={() => setShowSamples((v) => !v)}
+                aria-expanded={showSamples}
+                className="focus-ring flex w-full items-center gap-3 px-5 py-4 text-left transition-colors tint-hover"
+              >
+                <div className="min-w-0">
+                  <h3 className="text-[15px] font-bold tracking-[-0.01em] text-mist-100">
+                    No document to hand?
+                  </h3>
+                  <p className="mt-0.5 text-[13px] text-mist-500">
+                    Try one of {samples.length} bundled sample rows
+                  </p>
+                </div>
+                <svg
+                  viewBox="0 0 16 16"
+                  aria-hidden
+                  className={cn(
+                    "ml-auto size-4 shrink-0 text-mist-400 transition-transform duration-200",
+                    showSamples && "rotate-180",
+                  )}
+                >
+                  <path
+                    d="m4 6 4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+
+              {showSamples && (
+              <ul className="animate-rise divide-y divide-[var(--hairline)] border-t border-[var(--hairline)]">
                 {samples.map((s) => {
                   const active = s.mpn === form.mpn;
                   return (
@@ -219,6 +250,7 @@ export function EnrichConsole() {
                   );
                 })}
               </ul>
+              )}
             </Panel>
           )}
         </div>

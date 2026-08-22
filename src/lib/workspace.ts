@@ -22,8 +22,8 @@
 import { useCallback, useEffect, useState } from "react";
 import type { CatalogRecord } from "./record";
 
-const KEY = "unilog.workspace.v2";
-const EVENT = "unilog:workspace";
+const KEY = "unify.workspace.v1";
+const EVENT = "unify:workspace";
 
 /** Guards against a quota error or a full disk taking the page down. */
 function read(): CatalogRecord[] {

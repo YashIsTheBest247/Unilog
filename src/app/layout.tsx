@@ -4,6 +4,10 @@ import "./globals.css";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { THEME_INIT } from "@/components/site/ThemeToggle";
+import {
+  PageTransition,
+  RouteProgress,
+} from "@/components/motion/PageTransition";
 
 const figtree = Figtree({
   subsets: ["latin"],
@@ -25,11 +29,11 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   ),
   title: {
-    default: "Unilog · Product Intelligence Engine",
-    template: "%s · Unilog Product Intelligence",
+    default: "Unify · Product Intelligence",
+    template: "%s · Unify",
   },
   description: DESCRIPTION,
-  applicationName: "Unilog Product Intelligence",
+  applicationName: "Unify",
   keywords: [
     "PIM",
     "product data enrichment",
@@ -40,13 +44,13 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    title: "Unilog · Product Intelligence Engine",
+    title: "Unify · Product Intelligence",
     description: DESCRIPTION,
-    siteName: "Unilog Product Intelligence",
+    siteName: "Unify",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Unilog · Product Intelligence Engine",
+    title: "Unify · Product Intelligence",
     description: DESCRIPTION,
   },
   robots: { index: true, follow: true },
@@ -82,10 +86,12 @@ export default function RootLayout({
           Skip to content
         </a>
 
+        <RouteProgress />
+
         <div className="relative flex min-h-dvh flex-col">
           <Header />
           <main id="main" className="flex-1">
-            {children}
+            <PageTransition>{children}</PageTransition>
           </main>
           <Footer />
         </div>

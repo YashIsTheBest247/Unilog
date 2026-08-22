@@ -89,9 +89,7 @@ export function ComparePanel() {
 
   useEffect(() => {
     if (classes.some((c) => c.id === classId)) return;
-    const first = classes[0];
-    setClassId(first?.id ?? "");
-    setQuery(first ? (PRESETS[first.id] ?? "") : "");
+    setClassId(classes[0]?.id ?? "");
     setResult(null);
   }, [classes, classId]);
 
@@ -169,7 +167,6 @@ export function ComparePanel() {
               type="button"
               onClick={() => {
                 setClassId(c.id);
-                setQuery(PRESETS[c.id] ?? "");
                 setResult(null);
               }}
               className={cn(
@@ -203,6 +200,15 @@ export function ComparePanel() {
               {busy ? "Comparing…" : "Recommend a product"}
             </Button>
             <span className="text-[12px] text-mist-500">⌘↵ to run</span>
+            {!query.trim() && PRESETS[classId] && (
+              <button
+                type="button"
+                onClick={() => setQuery(PRESETS[classId])}
+                className="focus-ring rounded-full border border-[var(--hairline)] px-3 py-1 text-[11px] text-mist-400 transition-colors hover:text-mist-100"
+              >
+                use an example
+              </button>
+            )}
           </div>
         </form>
 

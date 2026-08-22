@@ -2,6 +2,7 @@ import Link from "next/link";
 import { EnrichConsole } from "@/components/console/EnrichConsole";
 import { Arrow } from "@/components/site/Header";
 import { Badge, StepCard } from "@/components/ui/kit";
+import { Reveal } from "@/components/motion/Reveal";
 
 const STEPS = [
   {
@@ -92,23 +93,22 @@ export default function HomePage() {
 
       {/* How it works -------------------------------------------------- */}
       <section className="mx-auto max-w-[1400px] px-2 pt-20 sm:px-3">
-        <h2 className="text-[clamp(2rem,3.6vw,3rem)] leading-tight font-extrabold tracking-[-0.035em]">
-          How it works
-        </h2>
-        <p className="mt-3 max-w-xl text-[16px] text-mist-400">
-          Eight deterministic stages. Every one leaves a trace you can replay.
-        </p>
+        <Reveal>
+          <h2 className="text-[clamp(2rem,3.6vw,3rem)] leading-tight font-extrabold tracking-[-0.035em]">
+            How it works
+          </h2>
+          <p className="mt-3 max-w-xl text-[16px] text-mist-400">
+            Eight deterministic stages. Every one leaves a trace you can replay.
+          </p>
+        </Reveal>
 
         <div className="mt-9 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {STEPS.map((s, i) => (
-            <StepCard
-              key={s.title}
-              index={i + 1}
-              title={s.title}
-              preview={s.preview}
-            >
-              {s.body}
-            </StepCard>
+            <Reveal key={s.title} delay={i * 90} className="lift h-full">
+              <StepCard index={i + 1} title={s.title} preview={s.preview}>
+                {s.body}
+              </StepCard>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -118,7 +118,7 @@ export default function HomePage() {
         id="console"
         className="mx-auto max-w-[1500px] scroll-mt-24 px-2 pt-20 sm:px-3"
       >
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <Reveal className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="text-[clamp(2rem,3.6vw,3rem)] leading-tight font-extrabold tracking-[-0.035em]">
               The console
@@ -133,7 +133,7 @@ export default function HomePage() {
             <Badge tone="verify">adversarial validation</Badge>
             <Badge tone="amber">confidence gating</Badge>
           </div>
-        </div>
+        </Reveal>
 
         <EnrichConsole />
       </section>
