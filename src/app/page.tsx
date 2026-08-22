@@ -29,16 +29,21 @@ const STEPS = [
 export default function HomePage() {
   return (
     <div className="px-3 sm:px-5">
-      {/* Hero ---------------------------------------------------------- */}
-      <section className="hero-band relative mt-3 overflow-hidden rounded-[28px] px-6 py-16 sm:px-12 sm:py-24">
+      {/* Hero ----------------------------------------------------------
+          Sized to land inside one viewport: the sticky header is about
+          6rem, so the band claims the rest and centres itself. Every
+          step of the type scale is fluid, which keeps the headline, the
+          calls to action and the stat row above the fold on a laptop
+          without shrinking them into insignificance on a large screen. */}
+      <section className="hero-band relative mt-3 flex min-h-[min(46rem,calc(100dvh-6.5rem))] flex-col justify-center overflow-hidden rounded-[28px] px-6 py-10 sm:px-12">
         <div className="grid-lines pointer-events-none absolute inset-0 opacity-60 [mask-image:radial-gradient(70%_70%_at_70%_0%,black,transparent)]" />
 
-        <div className="animate-rise relative mx-auto max-w-[1400px]">
+        <div className="animate-rise relative mx-auto w-full max-w-[1400px]">
           <p className="strapline text-white/45">
             AI-powered product intelligence
           </p>
 
-          <h1 className="mt-6 text-[clamp(2.6rem,6.4vw,5.2rem)] leading-[0.98] font-extrabold tracking-[-0.045em] text-white">
+          <h1 className="mt-[clamp(0.75rem,1.6vh,1.5rem)] text-[clamp(2.1rem,5.1vw,4.1rem)] leading-[1] font-extrabold tracking-[-0.045em] text-white">
             Scattered specs
             <br />
             into{" "}
@@ -47,44 +52,40 @@ export default function HomePage() {
             </span>
           </h1>
 
-          <p className="mt-8 max-w-xl text-[17px] leading-relaxed text-white/70">
+          <p className="mt-[clamp(1rem,2vh,1.75rem)] max-w-xl text-[clamp(0.95rem,1.15vw,1.05rem)] leading-relaxed text-white/70">
             Extraction is the easy half. This engine fills the attribute schema
             a product&apos;s class demands, then sends an adversarial critic to
             refute every value against its source — so nothing publishes that
             can&apos;t be defended.
           </p>
 
-          <p className="strapline mt-7 text-white/40">
-            Cited evidence. Resolved conflicts. Gated publishing.
-          </p>
-
-          <div className="mt-9 flex flex-wrap items-center gap-3">
+          <div className="mt-[clamp(1.25rem,2.4vh,2rem)] flex flex-wrap items-center gap-2.5">
             <Link
               href="#console"
-              className="focus-ring inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-[15px] font-semibold text-[#101013] transition-opacity hover:opacity-90"
+              className="focus-ring inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[15px] font-semibold text-[#101013] transition-opacity hover:opacity-90"
             >
               Run an enrichment
               <Arrow />
             </Link>
             <Link
               href="/search"
-              className="focus-ring inline-flex items-center gap-2 rounded-full border border-white/25 px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-white/10"
+              className="focus-ring inline-flex items-center gap-2 rounded-full border border-white/25 px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-white/10"
             >
               See the commerce impact
             </Link>
             <Link
-              href="/batch"
-              className="focus-ring inline-flex items-center gap-2 rounded-full px-5 py-3.5 text-[15px] font-semibold text-white/70 transition-colors hover:text-white"
+              href="/graph"
+              className="focus-ring inline-flex items-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold text-white/70 transition-colors hover:text-white"
             >
-              Catalog run
+              Knowledge graph
               <Arrow />
             </Link>
           </div>
 
-          <dl className="mt-12 flex flex-wrap gap-x-10 gap-y-5 border-t border-white/12 pt-7">
-            <Stat value="479/479" label="quotes anchored to their source" />
-            <Stat value="91%" label="attributes cleared to auto-publish" />
-            <Stat value="36 → 96" label="average data quality" />
+          <dl className="mt-[clamp(1.5rem,3vh,2.75rem)] flex flex-wrap gap-x-10 gap-y-4 border-t border-white/12 pt-[clamp(1rem,2vh,1.75rem)]">
+            <Stat value="Any PDF" label="datasheet, catalog or product URL" />
+            <Stat value="Every value" label="cited to a span of its source" />
+            <Stat value="92%" label="confidence needed to auto-publish" />
           </dl>
         </div>
       </section>

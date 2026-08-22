@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import type { AttributeValue } from "@/lib/types";
+import { toCatalogRecord } from "@/lib/record";
+import { useWorkspace } from "@/lib/workspace";
 import { useEnrichment } from "@/lib/useEnrichment";
 import type { EnrichmentInput } from "@/lib/useEnrichment";
 import { Badge, Button, Panel, PanelHeader } from "@/components/ui/kit";
@@ -33,6 +36,8 @@ export function EnrichConsole() {
   const [samples, setSamples] = useState<Sample[]>([]);
   const [attached, setAttached] = useState<AttachedSource[]>([]);
   const [inspecting, setInspecting] = useState<AttributeValue | null>(null);
+  const { save, records } = useWorkspace();
+  const savedId = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -51,6 +56,14 @@ export function EnrichConsole() {
       cancelled = true;
     };
   }, []);
+
+  // Every completed run joins the workspace, which is what the batch,
+  // search, compare and graph views actually read.
+  useEffect(() => {
+    if (!product || savedId.current === product.raw.id) return;
+    savedId.current = product.raw.id;
+    save(toCatalogRecord(product, { seed: false }));
+  }, [product, save]);
 
   const running = status === "running";
   const canRun = form.mpn.trim() !== "" && form.brand.trim() !== "" && !running;
@@ -138,9 +151,17 @@ export function EnrichConsole() {
                 </Button>
                 <p className="text-xs text-mist-500">
                   {attached.length > 0
-                    ? `${attached.length} supplied document${attached.length === 1 ? "" : "s"} plus any cached evidence for this MPN.`
+                    ? `${attached.length} supplied document${attached.length === 1 ? "" : "s"}.`
                     : "Eight stages, streamed live."}
                 </p>
+                {records.length > 0 && (
+                  <Link
+                    href="/batch"
+                    className="focus-ring ml-auto rounded-full px-3 py-1 text-xs font-semibold text-brand-600 hover:underline"
+                  >
+                    {records.length} in workspace →
+                  </Link>
+                )}
               </div>
             </form>
           </Panel>
@@ -155,8 +176,8 @@ export function EnrichConsole() {
           {samples.length > 0 && (
             <Panel className="overflow-hidden">
               <PanelHeader
-                title="Demo bench"
-                hint="Supplier rows the bundled evidence corpus can answer"
+                title="Sample rows"
+                hint="Bundled examples for trying the engine without a document of your own"
               />
               <ul className="divide-y divide-[var(--hairline)]">
                 {samples.map((s) => {

@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import type { CatalogRecord, CatalogResult } from "@/lib/catalog";
+import { useMemo, useState } from "react";
+import type { CatalogRecord } from "@/lib/record";
+import { useWorkspace } from "@/lib/workspace";
 import { Badge, Button, Panel, PanelHeader } from "@/components/ui/kit";
+import { SampleNotice, WorkspaceGate } from "@/components/site/WorkspaceGate";
 import { cn } from "@/lib/utils";
 
 type Mode = "raw" | "enriched";
@@ -193,30 +195,10 @@ function buildFacets(hits: Hit[], mode: Mode): FacetGroup[] {
 /* ------------------------------------------------------------ component */
 
 export function SearchExplorer() {
-  const [data, setData] = useState<CatalogResult | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [failed, setFailed] = useState(false);
+  const { records, ready, loadSamples, clearSamples } = useWorkspace();
   const [mode, setMode] = useState<Mode>("raw");
   const [query, setQuery] = useState(PRESETS[0]);
   const [selected, setSelected] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/catalog")
-      .then((r) => r.json())
-      .then((json) => {
-        if (cancelled) return;
-        if (json.error) setFailed(true);
-        else setData(json);
-      })
-      .catch(() => !cancelled && setFailed(true))
-      .finally(() => !cancelled && setLoading(false));
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const records = data?.records ?? [];
 
   const hits = useMemo(
     () => search(records, query, mode),
@@ -261,29 +243,27 @@ export function SearchExplorer() {
     setSelected({});
   }
 
-  if (loading) {
+  if (!ready) return <Panel className="h-64 animate-pulse" />;
+
+  if (records.length === 0) {
     return (
-      <Panel className="grid place-items-center px-6 py-24">
-        <p className="animate-pulse font-mono text-[11px] tracking-[0.2em] text-brand-400 uppercase">
-          running the catalog…
-        </p>
-      </Panel>
+      <WorkspaceGate
+        title="Nothing to search yet"
+        blurb="This view compares what a storefront can find in your raw supplier rows against what it can find once those rows are enriched. Enrich something first, or load the samples to see the contrast."
+        onLoadSamples={loadSamples}
+      />
     );
   }
 
-  if (failed || records.length === 0) {
-    return (
-      <Panel className="grid place-items-center px-6 py-20 text-center">
-        <p className="text-sm text-mist-300">The catalog could not be built.</p>
-        <p className="mt-1 text-[13px] text-mist-500">
-          Reload the page to run it again.
-        </p>
-      </Panel>
-    );
-  }
+  const seeds = records.filter((r) => r.seed).length;
 
   return (
     <div className="space-y-5">
+      <SampleNotice
+        seeds={seeds}
+        total={records.length}
+        onClear={clearSamples}
+      />
       {/* Controls ------------------------------------------------------ */}
       <Panel className="overflow-hidden">
         <div className="flex flex-wrap items-center gap-3 px-5 py-4">

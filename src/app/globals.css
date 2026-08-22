@@ -165,6 +165,32 @@
   border-color: var(--hairline);
 }
 
+/* Tailwind v4 stopped forcing cursor:pointer on buttons, deferring to
+   the browser default of `default`. Interactive elements have to look
+   interactive, so put it back. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+a[href],
+summary,
+select:not(:disabled),
+label:has(input[type="file"]),
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled,
+select:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* Anything clickable inside an SVG canvas, such as a graph node. */
+svg [role="button"],
+svg .node-hit {
+  cursor: pointer;
+}
+
 html {
   scroll-behavior: smooth;
   background: var(--canvas);

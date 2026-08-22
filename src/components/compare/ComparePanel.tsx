@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { CellStatus, Comparison, Requirement } from "@/lib/pipeline/compare";
+import { requirementsFromQuery, runComparison } from "@/lib/pipeline/compare";
+import { getClass, TAXONOMY } from "@/data/taxonomy";
+import { useWorkspace } from "@/lib/workspace";
 import { Badge, Button, Panel, PanelHeader } from "@/components/ui/kit";
+import { SampleNotice, WorkspaceGate } from "@/components/site/WorkspaceGate";
 import { cn } from "@/lib/utils";
 
 interface ClassOption {
@@ -54,7 +58,7 @@ const CELL: Record<
 };
 
 export function ComparePanel() {
-  const [classes, setClasses] = useState<ClassOption[]>([]);
+  const { records, ready, loadSamples, clearSamples } = useWorkspace();
   const [classId, setClassId] = useState<string>("");
   const [query, setQuery] = useState("");
   const [result, setResult] = useState<Comparison | null>(null);
@@ -62,32 +66,41 @@ export function ComparePanel() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Only classes holding more than one candidate are worth comparing.
+  const classes: ClassOption[] = useMemo(
+    () =>
+      TAXONOMY.map((cls) => {
+        const inClass = records.filter((r) => r.classId === cls.id);
+        return {
+          id: cls.id,
+          label: cls.label,
+          count: inClass.length,
+          skus: inClass.map((r) => ({
+            id: r.id,
+            mpn: r.raw.mpn,
+            brand: r.raw.brand,
+            title: r.commerce.title,
+            quality: r.after.total,
+          })),
+        };
+      }).filter((c) => c.count > 1),
+    [records],
+  );
+
   useEffect(() => {
-    let cancelled = false;
-    fetch("/api/compare")
-      .then((r) => r.json())
-      .then((json) => {
-        if (cancelled) return;
-        const list: ClassOption[] = json.classes ?? [];
-        setClasses(list);
-        const first = list[0];
-        if (first) {
-          setClassId(first.id);
-          setQuery(PRESETS[first.id] ?? "");
-        }
-      })
-      .catch(() => setError("The candidate catalog could not be loaded."));
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    if (classes.some((c) => c.id === classId)) return;
+    const first = classes[0];
+    setClassId(first?.id ?? "");
+    setQuery(first ? (PRESETS[first.id] ?? "") : "");
+    setResult(null);
+  }, [classes, classId]);
 
   const active = useMemo(
     () => classes.find((c) => c.id === classId) ?? null,
     [classes, classId],
   );
 
-  async function submit(e?: React.FormEvent) {
+  function submit(e?: React.FormEvent) {
     e?.preventDefault();
     if (!classId || !query.trim() || busy) return;
 
@@ -96,15 +109,18 @@ export function ComparePanel() {
     setResult(null);
 
     try {
-      const response = await fetch("/api/compare", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ classId, query: query.trim() }),
-      });
-      const json = await response.json();
-      if (!response.ok) throw new Error(json.error ?? "The comparison failed.");
-      setResult(json.comparison);
-      setDerived(json.derived ?? []);
+      const cls = getClass(classId);
+      const field = records.filter((r) => r.classId === classId);
+      const requirements = requirementsFromQuery(cls, query.trim());
+
+      if (requirements.length === 0) {
+        throw new Error(
+          "Nothing in that description maps to an attribute of this class. Name a size, a material, a rating or a connection type.",
+        );
+      }
+
+      setDerived(requirements);
+      setResult(runComparison(field, requirements));
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -112,8 +128,28 @@ export function ComparePanel() {
     }
   }
 
+  if (!ready) return <Panel className="h-64 animate-pulse" />;
+
+  if (classes.length === 0) {
+    return (
+      <WorkspaceGate
+        title="Not enough to compare"
+        blurb="Comparison needs at least two products of the same class in your workspace. Enrich a couple, or load the samples to try it straight away."
+        onLoadSamples={loadSamples}
+      />
+    );
+  }
+
+  const seeds = records.filter((r) => r.seed).length;
+
   return (
     <div className="space-y-5">
+      <SampleNotice
+        seeds={seeds}
+        total={records.length}
+        onClear={clearSamples}
+      />
+
       {/* Requirements -------------------------------------------------- */}
       <Panel className="overflow-hidden">
         <PanelHeader

@@ -7,8 +7,10 @@ import type {
   KnowledgeGraph,
   NodeKind,
 } from "@/lib/graph";
-import { EDGE_LABEL, egoNetwork } from "@/lib/graph";
+import { buildGraph, EDGE_LABEL, egoNetwork } from "@/lib/graph";
+import { useWorkspace } from "@/lib/workspace";
 import { Badge, Panel, PanelHeader } from "@/components/ui/kit";
+import { SampleNotice, WorkspaceGate } from "@/components/site/WorkspaceGate";
 import { cn } from "@/lib/utils";
 
 const KIND_STYLE: Record<NodeKind, { fill: string; text: string; label: string }> = {
@@ -36,29 +38,26 @@ function truncate(text: string, max = 22) {
 }
 
 export function GraphExplorer() {
-  const [graph, setGraph] = useState<KnowledgeGraph | null>(null);
+  const { records, ready, loadSamples, clearSamples } = useWorkspace();
   const [focusId, setFocusId] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
 
+  // The graph is a pure function of the workspace, so it is rebuilt in
+  // the browser rather than fetched. No round trip, and it stays in
+  // step with whatever was just enriched.
+  const graph: KnowledgeGraph | null = useMemo(
+    () => (records.length > 0 ? buildGraph(records) : null),
+    [records],
+  );
+
   useEffect(() => {
-    let cancelled = false;
-    fetch("/api/graph")
-      .then((r) => r.json())
-      .then((json) => {
-        if (cancelled) return;
-        if (json.error) return setError(json.error);
-        setGraph(json.graph);
-        const firstProduct = json.graph.nodes.find(
-          (n: GraphNode) => n.kind === "product",
-        );
-        if (firstProduct) setFocusId(firstProduct.id);
-      })
-      .catch(() => setError("The knowledge graph could not be loaded."));
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    if (!graph) return;
+    if (graph.nodes.some((n: GraphNode) => n.id === focusId)) return;
+    const firstProduct = graph.nodes.find(
+      (n: GraphNode) => n.kind === "product",
+    );
+    setFocusId(firstProduct?.id ?? "");
+  }, [graph, focusId]);
 
   const ego = useMemo(
     () => (graph ? egoNetwork(graph, focusId) : { focus: null, neighbours: [] }),
@@ -84,26 +83,27 @@ export function GraphExplorer() {
     return [...map.entries()];
   }, [ego.neighbours]);
 
-  if (error) {
-    return (
-      <Panel className="grid place-items-center px-6 py-20 text-center">
-        <p className="text-sm text-mist-300">{error}</p>
-      </Panel>
-    );
-  }
+  if (!ready) return <Panel className="h-64 animate-pulse" />;
 
   if (!graph) {
     return (
-      <Panel className="grid place-items-center px-6 py-24">
-        <p className="strapline animate-pulse text-[10px] text-brand-500">
-          building the graph…
-        </p>
-      </Panel>
+      <WorkspaceGate
+        title="No graph yet"
+        blurb="The graph is built from what you have enriched: brands, categories, shared attributes, certifications, product families and mating parts. Enrich a product, or load the samples to see the shape of it."
+        onLoadSamples={loadSamples}
+      />
     );
   }
 
+  const seeds = records.filter((r) => r.seed).length;
+
   return (
     <div className="space-y-5">
+      <SampleNotice
+        seeds={seeds}
+        total={records.length}
+        onClear={clearSamples}
+      />
       {/* Stats --------------------------------------------------------- */}
       <div className="grid gap-4 sm:grid-cols-3">
         <Panel className="px-5 py-4">
