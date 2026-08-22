@@ -308,18 +308,33 @@ function mapEnum(raw: string, allowed: string[]): string | null {
     .sort((a, b) => tokens(b).split(" ").length - tokens(a).split(" ").length)[0];
   if (subset) return subset;
 
-  // 4. Punctuation-insensitive containment. Closest length wins, not
-  //    longest - otherwise "150" resolves to Class 1500 rather than
-  //    Class 150, which is a 10x pressure error.
+  // 4. The raw string contains a whole allowed value. Closest length
+  //    wins, not longest - otherwise "150" resolves to Class 1500
+  //    rather than Class 150, which is a 10x pressure error.
   const sq = squash(raw);
-  const contained = allowed
-    .filter((v) => sq.includes(squash(v)) || squash(v).includes(sq))
+  const containsWhole = allowed
+    .filter((v) => sq.includes(squash(v)))
     .sort(
       (a, b) =>
         Math.abs(squash(a).length - sq.length) -
         Math.abs(squash(b).length - sq.length),
-    )[0];
-  if (contained) return contained;
+    );
+  if (containsWhole.length > 0) return containsWhole[0];
+
+  // 5. A single token that is one of the allowed value's own words.
+  //
+  //    Token membership, not substring: "at" is a substring of "Chrome
+  //    Plated Brass" and would otherwise resolve to it, and "316" needs
+  //    to reach "Stainless Steel 316" without that licence. If the token
+  //    fits more than one allowed value it is ambiguous - "stainless"
+  //    belongs to both 304 and 316 - and guessing between them is worse
+  //    than declining, because the guess is silent.
+  const rawTokenList = rawTokens.split(" ");
+  if (rawTokenList.length === 1 && rawTokenList[0].length >= 3) {
+    const token = rawTokenList[0];
+    const owners = allowed.filter((v) => tokens(v).split(" ").includes(token));
+    if (owners.length === 1) return owners[0];
+  }
 
   return null;
 }

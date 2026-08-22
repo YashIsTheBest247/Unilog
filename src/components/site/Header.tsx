@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { href: "/", label: "Enrich" },
   { href: "/ask", label: "Ask" },
+  { href: "/compare", label: "Compare" },
   { href: "/batch", label: "Batch" },
   { href: "/search", label: "Search Impact" },
 ];
