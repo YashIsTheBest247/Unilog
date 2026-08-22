@@ -11,6 +11,8 @@ import { EvidenceDrawer } from "./EvidenceDrawer";
 import { Scoreboard } from "./Scoreboard";
 import { StageTrack } from "./StageTrack";
 import { CommercePanel, ConflictPanel, CriticLog, SourcePanel } from "./SideRail";
+import { SourceIngest } from "./SourceIngest";
+import type { AttachedSource } from "./SourceIngest";
 
 interface Sample extends EnrichmentInput {
   id: string;
@@ -29,6 +31,7 @@ export function EnrichConsole() {
   const { status, stages, logs, product, error, run, reset } = useEnrichment();
   const [form, setForm] = useState<EnrichmentInput>(EMPTY);
   const [samples, setSamples] = useState<Sample[]>([]);
+  const [attached, setAttached] = useState<AttachedSource[]>([]);
   const [inspecting, setInspecting] = useState<AttributeValue | null>(null);
 
   useEffect(() => {
@@ -61,6 +64,13 @@ export function EnrichConsole() {
       brand: form.brand.trim(),
       description: form.description.trim(),
       supplierCategory: form.supplierCategory?.trim() || undefined,
+      sources: attached.map(({ kind, title, locator, url, text }) => ({
+        kind,
+        title,
+        locator,
+        url,
+        text,
+      })),
     });
   }
 
@@ -122,16 +132,24 @@ export function EnrichConsole() {
                 optional
               />
 
-              <div className="flex items-center gap-3 pt-1">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
                 <Button type="submit" disabled={!canRun}>
                   {running ? "Enriching…" : "Run enrichment"}
                 </Button>
                 <p className="text-xs text-mist-500">
-                  Eight stages, streamed live.
+                  {attached.length > 0
+                    ? `${attached.length} supplied document${attached.length === 1 ? "" : "s"} plus any cached evidence for this MPN.`
+                    : "Eight stages, streamed live."}
                 </p>
               </div>
             </form>
           </Panel>
+
+          <SourceIngest
+            sources={attached}
+            onChange={setAttached}
+            disabled={running}
+          />
 
           {/* Demo bench ---------------------------------------------- */}
           {samples.length > 0 && (

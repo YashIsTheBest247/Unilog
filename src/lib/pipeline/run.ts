@@ -15,6 +15,7 @@ import type {
   EnrichedProduct,
   RawProduct,
   TraceEvent,
+  UserSource,
 } from "@/lib/types";
 import { classify } from "./classify";
 import { compose } from "./compose";
@@ -32,13 +33,15 @@ export interface RunOptions {
    * batch work, where the padding would dominate the wall clock.
    */
   paced?: boolean;
+  /** Documents the operator uploaded, fetched or pasted for this run. */
+  userSources?: UserSource[];
 }
 
 export async function* runPipeline(
   raw: RawProduct,
   options: RunOptions = {},
 ): AsyncGenerator<TraceEvent> {
-  const { paced = true } = options;
+  const { paced = true, userSources = [] } = options;
   const runStarted = Date.now();
   let anyLive = false;
 
@@ -77,13 +80,13 @@ export async function* runPipeline(
     yield { type: "stage", stage: "retrieve", status: "start" };
     t = Date.now();
 
-    const { sources, note } = retrieve(raw);
+    const { sources, note } = retrieve(raw, userSources);
 
     if (sources.length === 0) {
       yield { type: "log", stage: "retrieve", message: note, tone: "warn" };
       yield {
         type: "error",
-        message: `No evidence available for ${raw.brand} ${raw.mpn}. Nothing can be published without a source, so the run stops here.`,
+        message: `No evidence available for ${raw.brand} ${raw.mpn}. Upload a datasheet, paste a product URL, or choose a SKU from the demo bench — nothing can be published without a source.`,
       };
       return;
     }

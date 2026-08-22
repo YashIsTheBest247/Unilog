@@ -1,6 +1,12 @@
 import { SearchExplorer } from "@/components/search/SearchExplorer";
 import { Eyebrow } from "@/components/ui/kit";
 
+export const metadata = {
+  title: "Search impact",
+  description:
+    "The same storefront query against raw supplier data and against enriched records, with the facet rail that appears in between.",
+};
+
 export default function SearchPage() {
   return (
     <div className="mx-auto max-w-[1500px] px-5 pt-14 pb-6 sm:px-8">

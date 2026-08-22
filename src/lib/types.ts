@@ -97,6 +97,15 @@ export interface EvidenceSource {
   claims: SourceClaim[];
 }
 
+/** A document the operator supplied: uploaded, fetched or pasted. */
+export interface UserSource {
+  kind: SourceKind;
+  title: string;
+  locator: string;
+  url: string;
+  text: string;
+}
+
 /* ------------------------------------------------------------------ Values */
 
 export type CriticVerdict = "SUPPORTED" | "UNSUPPORTED" | "CONTRADICTED";
@@ -108,6 +117,7 @@ export type DerivationMethod =
   | "enum_mapping"
   | "table_lookup"
   | "consensus"
+  | "heuristic_read"
   | "inferred";
 
 export interface Citation {

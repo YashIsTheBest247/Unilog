@@ -5,6 +5,21 @@ import { runPipeline } from "@/lib/pipeline/run";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const UserSourceSchema = z.object({
+  kind: z.enum([
+    "manufacturer_datasheet",
+    "manufacturer_web",
+    "catalog_pdf",
+    "distributor_listing",
+    "marketplace",
+    "product_image",
+  ]),
+  title: z.string().trim().min(1).max(200),
+  locator: z.string().trim().max(200).default(""),
+  url: z.string().trim().max(2000).default(""),
+  text: z.string().min(1).max(80_000),
+});
+
 const Body = z.object({
   mpn: z.string().trim().min(1, "An MPN is required").max(80),
   brand: z.string().trim().min(1, "A brand is required").max(80),
@@ -12,6 +27,7 @@ const Body = z.object({
   supplierCategory: z.string().trim().max(120).optional(),
   listPrice: z.number().nonnegative().optional(),
   uom: z.string().trim().max(12).optional(),
+  sources: z.array(UserSourceSchema).max(8).default([]),
 });
 
 /**
@@ -26,14 +42,19 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     const message =
       err instanceof z.ZodError
-        ? err.issues.map((i) => i.message).join("; ")
+        ? err.issues
+            .map((i) =>
+              i.path.length ? `${i.path.join(".")}: ${i.message}` : i.message,
+            )
+            .join("; ")
         : "Request body could not be parsed";
     return Response.json({ error: message }, { status: 400 });
   }
 
+  const { sources, ...rest } = parsed;
   const raw = {
-    id: `sku-${parsed.brand}-${parsed.mpn}`.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
-    ...parsed,
+    id: `sku-${rest.brand}-${rest.mpn}`.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+    ...rest,
   };
 
   const encoder = new TextEncoder();
@@ -45,7 +66,7 @@ export async function POST(request: NextRequest) {
       };
 
       try {
-        for await (const event of runPipeline(raw)) {
+        for await (const event of runPipeline(raw, { userSources: sources })) {
           send(event);
         }
       } catch (err) {

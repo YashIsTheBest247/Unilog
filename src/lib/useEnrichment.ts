@@ -7,6 +7,7 @@ import type {
   RawProduct,
   StageId,
   TraceEvent,
+  UserSource,
 } from "./types";
 
 export interface StageState {
@@ -35,6 +36,8 @@ export interface EnrichmentInput {
   brand: string;
   description: string;
   supplierCategory?: string;
+  /** Documents the operator uploaded, fetched or pasted for this run. */
+  sources?: UserSource[];
 }
 
 /**

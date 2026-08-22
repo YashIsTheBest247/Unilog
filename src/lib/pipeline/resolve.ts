@@ -12,6 +12,13 @@
  *   + corroboration +0.05 per independent agreeing source, capped
  *   - conflict      -0.14 when the tie was broken on authority alone
  *   x critic        SUPPORTED 1.0 | UNSUPPORTED 0.5 | CONTRADICTED 0.2
+ *   x reader        0.88 when the value came from the heuristic reader
+ *
+ * That last factor is the point of the whole exercise. A document a
+ * user just uploaded, read by pattern matching and corroborated by
+ * nothing, cannot clear the publish bar on its own - it lands in review
+ * at ~0.87. Give it one agreeing source and it clears. That is the
+ * correct incentive: evidence, not confidence in the reader.
  *
  * Gate then turns that number into an operational decision. The
  * thresholds are the product: publish only what is defensible, send the
@@ -37,6 +44,9 @@ const CRITIC_MULTIPLIER: Record<ScoredCandidate["verdict"], number> = {
   UNSUPPORTED: 0.5,
   CONTRADICTED: 0.2,
 };
+
+/** Machine-read values are held to a higher bar than curated ones. */
+const HEURISTIC_MULTIPLIER = 0.88;
 
 export function decide(confidence: number): GateDecision {
   if (confidence >= PUBLISH_THRESHOLD) return "publish";
@@ -152,6 +162,7 @@ export function resolve(
 
     if (agreeing.length > 0 && !winner.converted) method = "consensus";
     if (winner.quote.includes("  ")) method = "table_lookup";
+    if (winner.heuristic) method = "heuristic_read";
 
     if (disputers.length > 0) {
       conflicts++;
@@ -189,7 +200,12 @@ export function resolve(
       winner.authority + corroboration - conflictPenalty;
     const confidence = Math.max(
       0,
-      Math.min(0.99, raw * CRITIC_MULTIPLIER[winner.verdict]),
+      Math.min(
+        0.99,
+        raw *
+          CRITIC_MULTIPLIER[winner.verdict] *
+          (winner.heuristic ? HEURISTIC_MULTIPLIER : 1),
+      ),
     );
 
     return {

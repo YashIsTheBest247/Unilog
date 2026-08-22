@@ -32,13 +32,17 @@
   --color-reject-400: #ff6b6b;
   --color-reject-500: #e23d3d;
 
-  /* Text on navy */
+  /* Text on navy.
+     Tuned so every step used for text clears WCAG AA against the
+     darkest ground (#04122b): 300 is 7.9:1, 400 is 6.5:1, 500 is 5.0:1.
+     600 sits at 3.8:1 and is reserved for decorative and placeholder
+     text; 700 is a border tone and never carries type. */
   --color-mist-100: #eef1f6;
   --color-mist-200: #cfd8e5;
-  --color-mist-300: #9aa6b8;
-  --color-mist-400: #6f8099;
-  --color-mist-500: #5a6b82;
-  --color-mist-600: #47576c;
+  --color-mist-300: #a9b6c8;
+  --color-mist-400: #8b9bb2;
+  --color-mist-500: #76869e;
+  --color-mist-600: #63738c;
   --color-mist-700: #354356;
 
   --radius-card: 14px;

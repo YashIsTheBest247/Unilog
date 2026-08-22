@@ -4,6 +4,12 @@ import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "Catalog run",
+  description:
+    "Batch enrichment across the full bench: auto-publish rate, human review queue, conflict and refutation counts.",
+};
+
 export default async function BatchPage() {
   const { summary, records, reviewQueue } = await runCatalog();
 

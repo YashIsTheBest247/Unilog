@@ -11,10 +11,12 @@ export function Button({
   variant = "primary",
   size = "md",
   className,
+  ref,
   ...props
-}: ButtonProps) {
+}: ButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
   return (
     <button
+      ref={ref}
       className={cn(
         "focus-ring inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap transition-all duration-200 disabled:pointer-events-none disabled:opacity-45",
         size === "sm" && "px-3.5 py-1.5 text-[13px]",

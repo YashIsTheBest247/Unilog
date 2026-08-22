@@ -45,34 +45,29 @@ function matches(a: AttributeValue, filter: Filter) {
   }
 }
 
-/** A compact, clickable badge naming the source a value came from. */
-function ProvenanceChip({
-  source,
-  onClick,
-}: {
-  source: EvidenceSource;
-  onClick: () => void;
-}) {
+/**
+ * A compact badge naming a source the value came from.
+ *
+ * Deliberately not a button: the whole row is already the control that
+ * opens the evidence, and nesting an interactive element inside it
+ * would be invalid markup and a keyboard trap for no extra capability.
+ */
+function ProvenanceChip({ source }: { source: EvidenceSource }) {
   const authority = SOURCE_AUTHORITY[source.kind];
   return (
-    <button
-      type="button"
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
+    <span
       title={`${source.title} — ${source.locator} (authority ${authority.toFixed(2)})`}
       className={cn(
-        "focus-ring rounded border px-1.5 py-0.5 font-mono text-[10px] font-medium transition-colors",
+        "rounded border px-1.5 py-0.5 font-mono text-[10px] font-medium",
         authority >= 0.9
-          ? "border-verify-400/30 bg-verify-400/10 text-verify-400 hover:bg-verify-400/20"
+          ? "border-verify-400/30 bg-verify-400/10 text-verify-400"
           : authority >= 0.66
-            ? "border-brand-500/30 bg-brand-500/10 text-brand-300 hover:bg-brand-500/20"
-            : "border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20",
+            ? "border-brand-500/30 bg-brand-500/10 text-brand-300"
+            : "border-amber-500/30 bg-amber-500/10 text-amber-400",
       )}
     >
       {SOURCE_CODE[source.kind]}
-    </button>
+    </span>
   );
 }
 
@@ -158,6 +153,7 @@ export function AttributeTable({
                     <button
                       type="button"
                       onClick={() => onInspect(a)}
+                      aria-label={`${a.label}: ${a.value ?? "no evidence"}. Open the evidence behind this value.`}
                       className="focus-ring group grid w-full grid-cols-[minmax(0,1fr)_auto] items-start gap-3 px-5 py-3 text-left transition-colors hover:bg-brand-500/[0.06] sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)_auto]"
                     >
                       {/* Label ------------------------------------- */}
@@ -205,11 +201,7 @@ export function AttributeTable({
                             const source = sourceById.get(c.sourceId);
                             if (!source) return null;
                             return (
-                              <ProvenanceChip
-                                key={c.sourceId}
-                                source={source}
-                                onClick={() => onInspect(a)}
-                              />
+                              <ProvenanceChip key={c.sourceId} source={source} />
                             );
                           })}
                         </span>

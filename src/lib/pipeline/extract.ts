@@ -16,7 +16,9 @@ import type {
   EvidenceSource,
   RawProduct,
   TaxonomyClass,
+  UserSource,
 } from "@/lib/types";
+import { heuristicClaims } from "./heuristic";
 
 export interface Candidate {
   key: string;
@@ -26,6 +28,8 @@ export interface Candidate {
   quote: string;
   start: number;
   end: number;
+  /** Read by the deterministic reader rather than a curator or a model. */
+  heuristic?: boolean;
 }
 
 /* --------------------------------------------------------- retrieve */
@@ -35,24 +39,53 @@ export interface Retrieval {
   note: string;
 }
 
-export function retrieve(raw: RawProduct): Retrieval {
+/** Turn an operator-supplied document into an evidence source. */
+function adopt(source: UserSource, index: number): EvidenceSource {
+  return {
+    id: `user-${index}-${source.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 32)}`,
+    kind: source.kind,
+    title: source.title,
+    locator: source.locator,
+    url: source.url,
+    retrievedAt: "",
+    excerpt: source.text,
+    // Left empty on purpose. Extraction fills these, either with the
+    // model or with the heuristic reader, so an uploaded document is
+    // held to exactly the same citation rules as a cached one.
+    claims: [],
+  };
+}
+
+export function retrieve(
+  raw: RawProduct,
+  userSources: UserSource[] = [],
+): Retrieval {
   const entry = findCorpusEntry(raw.mpn, raw.brand);
+  const uploaded = userSources.map(adopt);
+  const cached = entry?.sources ?? [];
 
-  if (!entry) {
-    return {
-      sources: [],
-      note: `No cached evidence for ${raw.brand} ${raw.mpn}. Nothing can be published without a source.`,
-    };
-  }
-
-  const sources = [...entry.sources].sort(
+  const sources = [...cached, ...uploaded].sort(
     (a, b) => SOURCE_AUTHORITY[b.kind] - SOURCE_AUTHORITY[a.kind],
   );
 
+  if (sources.length === 0) {
+    return {
+      sources: [],
+      note: `No evidence for ${raw.brand} ${raw.mpn}. Upload a datasheet, paste a URL, or pick a SKU from the demo bench.`,
+    };
+  }
+
   const top = sources[0];
+  const provenance = [
+    cached.length ? `${cached.length} cached` : null,
+    uploaded.length ? `${uploaded.length} supplied` : null,
+  ]
+    .filter(Boolean)
+    .join(" + ");
+
   return {
     sources,
-    note: `${sources.length} sources ranked by authority; ${top.title} leads at ${SOURCE_AUTHORITY[top.kind].toFixed(2)}.`,
+    note: `${provenance} — ranked by authority; ${top.title} leads at ${SOURCE_AUTHORITY[top.kind].toFixed(2)}.`,
   };
 }
 
@@ -74,7 +107,14 @@ function offlineExtract(
   const out: Candidate[] = [];
 
   for (const source of sources) {
-    for (const claim of source.claims) {
+    // A source with no annotations is something the operator supplied,
+    // so read it with the heuristic extractor rather than skipping it.
+    const machineRead = source.claims.length === 0;
+    const claims = machineRead
+      ? heuristicClaims(cls, source.excerpt)
+      : source.claims;
+
+    for (const claim of claims) {
       // A claim outside this class's schema is out of scope by definition.
       if (!allowed.has(claim.key)) continue;
       const { start, end } = anchor(source, claim.quote);
@@ -86,6 +126,7 @@ function offlineExtract(
         quote: claim.quote,
         start,
         end,
+        heuristic: machineRead,
       });
     }
   }

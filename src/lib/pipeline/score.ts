@@ -98,38 +98,64 @@ export function scoreBefore(
   });
 }
 
+/**
+ * An attribute waiting on a human is not worth nothing.
+ *
+ * Scoring only what auto-published makes a single uploaded datasheet
+ * look like a failure - every value machine-read from one uncorroborated
+ * source lands in review, and the record scores near zero despite
+ * carrying twenty correct attributes. Half credit says what is actually
+ * true: the data is there, it is one signature away from publishable.
+ */
+const REVIEW_CREDIT = 0.5;
+
+function credit(a: AttributeValue) {
+  if (a.value === null) return 0;
+  if (a.decision === "publish") return 1;
+  if (a.decision === "review") return REVIEW_CREDIT;
+  return 0;
+}
+
 export function scoreAfter(
   cls: TaxonomyClass,
   attributes: AttributeValue[],
   commerceAssets: number,
 ): QualityScore {
-  const publishable = attributes.filter(
-    (a) => a.decision === "publish" && a.value !== null,
-  );
   const filled = attributes.filter((a) => a.value !== null);
+  const byKey = new Map(attributes.map((a) => [a.key, a]));
 
   const required = cls.attributes.filter((a) => a.required);
   const facetable = cls.attributes.filter((a) => a.facetable);
-  const publishedKeys = new Set(publishable.map((a) => a.key));
+
+  const creditFor = (key: string) => {
+    const a = byKey.get(key);
+    return a ? credit(a) : 0;
+  };
 
   // Richness blends attribute coverage with the commerce assets composed
   // on top of it, since a record with no title is not commerce-ready
   // however many attributes it carries.
-  const attributeRichness = ratio(publishable.length, cls.attributes.length);
+  const attributeRichness = ratio(
+    attributes.reduce((sum, a) => sum + credit(a), 0),
+    cls.attributes.length,
+  );
   const assetRichness = Math.min(1, commerceAssets / 4);
 
   return assemble({
     completeness: ratio(
-      required.filter((a) => publishedKeys.has(a.key)).length,
+      required.reduce((sum, a) => sum + creditFor(a.key), 0),
       required.length,
     ),
+    // Verification asks what the critic upheld, not what the gate let
+    // through. A value held back for want of corroboration was still
+    // verified against its source.
     verification: ratio(
-      publishable.filter((a) => a.verdict === "SUPPORTED").length,
+      filled.filter((a) => a.verdict === "SUPPORTED").length,
       Math.max(filled.length, 1),
     ),
     richness: attributeRichness * 0.75 + assetRichness * 0.25,
     searchability: ratio(
-      facetable.filter((a) => publishedKeys.has(a.key)).length,
+      facetable.reduce((sum, a) => sum + creditFor(a.key), 0),
       facetable.length,
     ),
   });

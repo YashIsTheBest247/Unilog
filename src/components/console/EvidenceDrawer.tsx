@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import type {
   AttributeValue,
   EnrichedProduct,
@@ -75,18 +75,56 @@ export function EvidenceDrawer({
     [product.sources],
   );
 
+  const panelRef = useRef<HTMLElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const returnFocusTo = useRef<HTMLElement | null>(null);
+
+  /** Keeps Tab inside the dialog while it is open. */
+  const trapFocus = useCallback((e: KeyboardEvent) => {
+    if (e.key !== "Tab" || !panelRef.current) return;
+
+    const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    );
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }, []);
+
   useEffect(() => {
     if (!attribute) return;
+
+    returnFocusTo.current = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      trapFocus(e);
     };
+
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
+
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      // Send the caret back where it came from, or the reader loses its place.
+      returnFocusTo.current?.focus?.();
     };
-  }, [attribute, onClose]);
+  }, [attribute, onClose, trapFocus]);
 
   if (!attribute) return null;
 
@@ -102,6 +140,7 @@ export function EvidenceDrawer({
       />
 
       <aside
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label={`Evidence for ${attribute.label}`}
@@ -120,7 +159,13 @@ export function EvidenceDrawer({
               {spec?.description}
             </p>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close">
+          <Button
+            ref={closeRef}
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            aria-label="Close evidence panel"
+          >
             Esc
           </Button>
         </header>
