@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Unilog-derived design tokens.
+   Palette sampled from unilogcorp.com: navy #0c2a4d / #04122b,
+   electric blue #009eff, amber #ff9d00, slate greys #9aa6b8 / #5a6b82.
+   ------------------------------------------------------------------ */
+@theme {
+  --font-sans: var(--font-figtree), "Open Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Ground */
+  --color-ink-950: #04122b;
+  --color-ink-900: #071b38;
+  --color-ink-850: #0a2445;
+  --color-ink-800: #0c2a4d;
+  --color-ink-700: #123761;
+  --color-ink-600: #1a4a7d;
+
+  /* Brand */
+  --color-brand-300: #7ccbff;
+  --color-brand-400: #38b6ff;
+  --color-brand-500: #009eff;
+  --color-brand-600: #0077cc;
+  --color-brand-700: #005ea3;
+
+  /* Signal */
+  --color-amber-400: #fbc756;
+  --color-amber-500: #ff9d00;
+  --color-verify-400: #34d17f;
+  --color-verify-500: #16a34a;
+  --color-reject-400: #ff6b6b;
+  --color-reject-500: #e23d3d;
+
+  /* Text on navy */
+  --color-mist-100: #eef1f6;
+  --color-mist-200: #cfd8e5;
+  --color-mist-300: #9aa6b8;
+  --color-mist-400: #6f8099;
+  --color-mist-500: #5a6b82;
+
+  --radius-card: 14px;
+
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-rise: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pulse-ring: pulse-ring 1.6s ease-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-brand-500) 55%, transparent); }
+  70%  { box-shadow: 0 0 0 9px color-mix(in srgb, var(--color-brand-500) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-brand-500) 0%, transparent); }
+}
+
+:root {
+  color-scheme: dark;
+  --surface: color-mix(in srgb, var(--color-ink-900) 82%, black);
+  --surface-raised: color-mix(in srgb, var(--color-ink-850) 88%, black);
+  --hairline: color-mix(in srgb, var(--color-brand-500) 16%, transparent);
+  --hairline-strong: color-mix(in srgb, var(--color-brand-500) 30%, transparent);
+}
+
+* { border-color: var(--hairline); }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background:
+    radial-gradient(1100px 620px at 82% -8%, color-mix(in srgb, var(--color-brand-600) 26%, transparent), transparent 62%),
+    radial-gradient(760px 520px at 6% 4%, color-mix(in srgb, var(--color-ink-600) 42%, transparent), transparent 58%),
+    var(--color-ink-950);
+  background-attachment: fixed;
+  color: var(--color-mist-100);
+  font-feature-settings: "cv02", "cv03", "cv11";
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+
+/* Utility layer -------------------------------------------------- */
+@utility panel {
+  background: linear-gradient(
+    170deg,
+    color-mix(in srgb, var(--color-ink-850) 72%, transparent),
+    color-mix(in srgb, var(--color-ink-950) 78%, transparent)
+  );
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-card);
+  backdrop-filter: blur(10px);
+}
+
+@utility panel-flat {
+  background: color-mix(in srgb, var(--color-ink-900) 60%, transparent);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-card);
+}
+
+@utility hair-x {
+  border-bottom: 1px solid var(--hairline);
+}
+
+@utility text-gradient {
+  background: linear-gradient(96deg, #ffffff 8%, var(--color-brand-300) 58%, var(--color-brand-500) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility grid-lines {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-brand-500) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-brand-500) 7%, transparent) 1px, transparent 1px);
+  background-size: 46px 46px;
+}
+
+@utility focus-ring {
+  outline: none;
+  &:focus-visible {
+    outline: 2px solid var(--color-brand-400);
+    outline-offset: 2px;
+  }
+}
+
+::selection { background: color-mix(in srgb, var(--color-brand-500) 40%, transparent); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-brand-500) 22%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--color-brand-500) 40%, transparent); background-clip: padding-box; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
