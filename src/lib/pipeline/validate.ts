@@ -120,8 +120,12 @@ function offlineCritique(
         continue;
       }
 
+      // Free text is phrasing, not data. "USA" and "United States" are
+      // the same fact, and refuting one against the other buries the
+      // contradictions that actually matter.
       if (
         spec &&
+        spec.type !== "text" &&
         reference &&
         reference.sourceId !== c.sourceId &&
         reference.authority > c.authority &&

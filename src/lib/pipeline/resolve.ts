@@ -24,6 +24,7 @@ import type {
   Conflict,
   DerivationMethod,
   GateDecision,
+  RefutedClaim,
   TaxonomyClass,
 } from "@/lib/types";
 import type { ScoredCandidate } from "./validate";
@@ -45,6 +46,7 @@ export function decide(confidence: number): GateDecision {
 
 export interface ResolveOutcome {
   attributes: AttributeValue[];
+  refuted: RefutedClaim[];
   conflicts: number;
   hallucinationsCaught: number;
 }
@@ -64,6 +66,29 @@ export function resolve(
   const hallucinationsCaught = scored.filter(
     (c) => c.verdict === "CONTRADICTED",
   ).length;
+
+  const specByKey = new Map(cls.attributes.map((a) => [a.key, a]));
+
+  // Everything the critic threw out, kept so the run can show its work.
+  // Contradictions first - those are the ones that would have shipped.
+  const refuted: RefutedClaim[] = scored
+    .filter((c) => c.verdict !== "SUPPORTED")
+    .sort((a, b) => {
+      if (a.verdict !== b.verdict) return a.verdict === "CONTRADICTED" ? -1 : 1;
+      return b.authority - a.authority;
+    })
+    .map((c) => ({
+      key: c.key,
+      label: specByKey.get(c.key)?.label ?? c.key,
+      sourceId: c.sourceId,
+      raw: c.raw,
+      normalized: c.normalized,
+      verdict: c.verdict,
+      note: c.criticNote,
+      quote: c.quote,
+      start: c.start,
+      end: c.end,
+    }));
 
   const attributes: AttributeValue[] = cls.attributes.map((spec) => {
     const group = byKey.get(spec.key) ?? [];
@@ -190,5 +215,5 @@ export function resolve(
     } satisfies AttributeValue;
   });
 
-  return { attributes, conflicts, hallucinationsCaught };
+  return { attributes, refuted, conflicts, hallucinationsCaught };
 }

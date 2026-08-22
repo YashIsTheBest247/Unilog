@@ -240,6 +240,7 @@ export async function* runPipeline(
       classificationConfidence: classification.confidence,
       classificationRationale: classification.rationale,
       attributes: resolved.attributes,
+      refuted: resolved.refuted,
       sources,
       commerce,
       before,

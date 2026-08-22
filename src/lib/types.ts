@@ -158,6 +158,20 @@ export interface RawProduct {
   uom?: string;
 }
 
+/** A claim the critic killed. Kept so the run can show its work. */
+export interface RefutedClaim {
+  key: string;
+  label: string;
+  sourceId: string;
+  raw: string;
+  normalized: string | null;
+  verdict: CriticVerdict;
+  note: string;
+  quote: string;
+  start: number;
+  end: number;
+}
+
 export interface CommerceContent {
   title: string;
   bullets: string[];
@@ -180,6 +194,8 @@ export interface EnrichedProduct {
   classificationConfidence: number;
   classificationRationale: string;
   attributes: AttributeValue[];
+  /** Everything the critic rejected, in the order it was refuted. */
+  refuted: RefutedClaim[];
   sources: EvidenceSource[];
   commerce: CommerceContent;
   before: QualityScore;
