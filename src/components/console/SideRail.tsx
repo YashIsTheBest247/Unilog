@@ -33,7 +33,7 @@ export function CriticLog({
           <button
             type="button"
             onClick={() => setShowAll((v) => !v)}
-            className="focus-ring rounded-full px-2.5 py-1 text-[11px] font-semibold text-mist-400 transition-colors hover:bg-white/5 hover:text-mist-200"
+            className="focus-ring rounded-full px-2.5 py-1 text-[11px] font-semibold text-mist-400 transition-colors tint-hover hover:text-mist-200"
           >
             {showAll ? "contradictions only" : `all ${product.refuted.length}`}
           </button>
@@ -189,7 +189,7 @@ export function CommercePanel({ product }: { product: EnrichedProduct }) {
 
       <div className="space-y-5 px-5 py-4">
         <div>
-          <p className="mb-1.5 font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+          <p className="mb-1.5 strapline text-[10px] text-mist-500">
             Product title
           </p>
           <p className="text-[15px] leading-snug font-semibold text-mist-100">
@@ -198,7 +198,7 @@ export function CommercePanel({ product }: { product: EnrichedProduct }) {
         </div>
 
         <div>
-          <p className="mb-1.5 font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+          <p className="mb-1.5 strapline text-[10px] text-mist-500">
             Feature bullets
           </p>
           <ul className="space-y-1">
@@ -215,14 +215,14 @@ export function CommercePanel({ product }: { product: EnrichedProduct }) {
         </div>
 
         <div>
-          <p className="mb-1.5 font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+          <p className="mb-1.5 strapline text-[10px] text-mist-500">
             Search synonyms
           </p>
           <div className="flex flex-wrap gap-1.5">
             {commerce.synonyms.map((s) => (
               <span
                 key={s}
-                className="rounded-full border border-[var(--hairline)] bg-white/[0.03] px-2.5 py-1 font-mono text-[11px] text-mist-300"
+                className="rounded-full border border-[var(--hairline)] tint-1 px-2.5 py-1 font-mono text-[11px] text-mist-300"
               >
                 {s}
               </span>
@@ -231,7 +231,7 @@ export function CommercePanel({ product }: { product: EnrichedProduct }) {
         </div>
 
         <div>
-          <p className="mb-1.5 font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+          <p className="mb-1.5 strapline text-[10px] text-mist-500">
             Applications
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -244,7 +244,7 @@ export function CommercePanel({ product }: { product: EnrichedProduct }) {
         </div>
 
         <div>
-          <p className="mb-1.5 font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+          <p className="mb-1.5 strapline text-[10px] text-mist-500">
             Meta description
           </p>
           <p className="text-[13px] leading-relaxed text-mist-400">
@@ -286,7 +286,7 @@ export function SourcePanel({ product }: { product: EnrichedProduct }) {
                   {s.locator}
                 </p>
                 <div className="mt-1.5 flex items-center gap-2">
-                  <div className="h-1 w-20 overflow-hidden rounded-full bg-white/[0.07]">
+                  <div className="h-1 w-20 overflow-hidden rounded-full tint-3">
                     <div
                       className={cn(
                         "h-full rounded-full",

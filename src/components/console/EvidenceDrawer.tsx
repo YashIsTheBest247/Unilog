@@ -136,7 +136,7 @@ export function EvidenceDrawer({
         type="button"
         aria-label="Close evidence panel"
         onClick={onClose}
-        className="absolute inset-0 bg-ink-950/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-[var(--scrim)] backdrop-blur-sm"
       />
 
       <aside
@@ -144,7 +144,7 @@ export function EvidenceDrawer({
         role="dialog"
         aria-modal="true"
         aria-label={`Evidence for ${attribute.label}`}
-        className="animate-rise relative flex h-full w-full max-w-2xl flex-col border-l border-[var(--hairline-strong)] bg-ink-950/95 shadow-[-24px_0_60px_-20px_rgba(0,0,0,0.7)]"
+        className="animate-rise relative flex h-full w-full max-w-2xl flex-col border-l border-[var(--hairline-strong)] bg-[var(--s-card)] shadow-[-24px_0_60px_-20px_rgba(0,0,0,0.7)]"
       >
         {/* Header ---------------------------------------------------- */}
         <header className="hair-x flex items-start gap-4 px-6 py-5">
@@ -217,7 +217,7 @@ export function EvidenceDrawer({
 
               <div className="mt-4">
                 <div className="mb-1.5 flex items-baseline justify-between">
-                  <span className="font-mono text-[10px] tracking-[0.16em] text-mist-500 uppercase">
+                  <span className="strapline text-[10px] text-mist-500">
                     Confidence
                   </span>
                   <span className="font-mono text-[11px] tabular-nums text-mist-300">
@@ -243,7 +243,7 @@ export function EvidenceDrawer({
 
           {/* Critic ------------------------------------------------ */}
           <section>
-            <h4 className="mb-2 font-mono text-[10px] tracking-[0.2em] text-mist-500 uppercase">
+            <h4 className="mb-2 strapline text-[10px] text-mist-500">
               Adversarial critic
             </h4>
             <div
@@ -268,7 +268,7 @@ export function EvidenceDrawer({
           {/* Conflict ---------------------------------------------- */}
           {attribute.conflict && (
             <section>
-              <h4 className="mb-2 font-mono text-[10px] tracking-[0.2em] text-mist-500 uppercase">
+              <h4 className="mb-2 strapline text-[10px] text-mist-500">
                 {attribute.conflict.resolution === "unit_equivalent"
                   ? "Cross-unit corroboration"
                   : "Source conflict"}
@@ -325,7 +325,7 @@ export function EvidenceDrawer({
 
           {/* Citations --------------------------------------------- */}
           <section>
-            <h4 className="mb-2 font-mono text-[10px] tracking-[0.2em] text-mist-500 uppercase">
+            <h4 className="mb-2 strapline text-[10px] text-mist-500">
               Cited evidence ({attribute.citations.length})
             </h4>
 

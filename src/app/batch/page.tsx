@@ -19,10 +19,10 @@ export default async function BatchPage() {
   const maxBand = Math.max(...summary.histogram.map((b) => b.count), 1);
 
   return (
-    <div className="mx-auto max-w-[1500px] px-5 pt-14 pb-6 sm:px-8">
+    <div className="mx-auto max-w-[1500px] px-4 pt-12 pb-6 sm:px-8">
       <Eyebrow>Batch operations</Eyebrow>
       <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
-        <h1 className="text-[clamp(2rem,3.6vw,2.9rem)] font-extrabold tracking-[-0.03em]">
+        <h1 className="text-[clamp(2.1rem,4vw,3.2rem)] font-extrabold tracking-[-0.04em]">
           Catalog run
         </h1>
         <Badge tone={summary.live ? "brand" : "neutral"}>
@@ -126,7 +126,7 @@ export default async function BatchPage() {
                 <p className="font-mono text-3xl font-bold text-mist-400 tabular-nums">
                   {summary.avgBefore}
                 </p>
-                <p className="mt-1 font-mono text-[10px] tracking-[0.16em] text-mist-500 uppercase">
+                <p className="mt-1 strapline text-[10px] text-mist-500">
                   raw feed
                 </p>
               </div>
@@ -155,7 +155,7 @@ export default async function BatchPage() {
             </div>
 
             <div className="mt-5 space-y-2">
-              <p className="font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+              <p className="strapline text-[10px] text-mist-500">
                 Score distribution
               </p>
               {summary.histogram.map((b) => (
@@ -163,7 +163,7 @@ export default async function BatchPage() {
                   <span className="w-12 shrink-0 font-mono text-[11px] text-mist-500">
                     {b.band}
                   </span>
-                  <div className="h-4 flex-1 overflow-hidden rounded bg-white/[0.05]">
+                  <div className="h-4 flex-1 overflow-hidden rounded tint-2">
                     <div
                       className={cn(
                         "h-full rounded transition-[width] duration-700",
@@ -258,8 +258,8 @@ export default async function BatchPage() {
           />
           <div className="max-h-[30rem] overflow-y-auto">
             <table className="w-full text-left">
-              <thead className="sticky top-0 z-10 bg-ink-900/95 backdrop-blur">
-                <tr className="font-mono text-[10px] tracking-[0.14em] text-mist-500 uppercase">
+              <thead className="sticky top-0 z-10 bg-[var(--s-card)]">
+                <tr className="strapline text-[10px] text-mist-500">
                   <th className="px-5 py-2 font-medium">SKU</th>
                   <th className="px-2 py-2 font-medium">Class</th>
                   <th className="px-2 py-2 text-right font-medium">Filled</th>
@@ -269,7 +269,7 @@ export default async function BatchPage() {
               </thead>
               <tbody className="divide-y divide-[var(--hairline)]">
                 {records.map((r) => (
-                  <tr key={r.id} className="hover:bg-white/[0.02]">
+                  <tr key={r.id} className="hover:tint-1">
                     <td className="px-5 py-2.5">
                       <span className="block truncate font-mono text-[12px] text-mist-100">
                         {r.raw.mpn}

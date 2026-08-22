@@ -91,7 +91,7 @@ export function EnrichConsole() {
                       reset();
                       setInspecting(null);
                     }}
-                    className="focus-ring rounded-full px-2.5 py-1 text-[11px] font-semibold text-mist-400 hover:bg-white/5 hover:text-mist-200"
+                    className="focus-ring rounded-full px-2.5 py-1 text-[11px] font-semibold text-mist-400 tint-hover hover:text-mist-200"
                   >
                     clear
                   </button>
@@ -171,7 +171,7 @@ export function EnrichConsole() {
                           "focus-ring w-full px-5 py-3 text-left transition-colors disabled:opacity-50",
                           active
                             ? "bg-brand-500/[0.08]"
-                            : "hover:bg-white/[0.03]",
+                            : "hover:tint-1",
                         )}
                       >
                         <div className="flex items-center gap-2">
@@ -266,7 +266,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 flex items-baseline gap-2 font-mono text-[10px] tracking-[0.16em] text-mist-500 uppercase">
+      <span className="mb-1.5 flex items-baseline gap-2 strapline text-[10px] text-mist-500">
         {label}
         {optional && <span className="text-mist-600 normal-case">optional</span>}
       </span>
@@ -275,7 +275,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          "focus-ring w-full rounded-lg border border-[var(--hairline)] bg-ink-950/50 px-3 py-2.5 text-sm text-mist-100 transition-colors placeholder:text-mist-600 hover:border-[var(--hairline-strong)] focus:border-brand-500",
+          "focus-ring w-full rounded-lg field px-3 py-2.5 text-sm text-mist-100 transition-colors placeholder:text-mist-600 hover:border-[var(--hairline-strong)] focus:border-brand-500",
           mono && "font-mono",
         )}
       />

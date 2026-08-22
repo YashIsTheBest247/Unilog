@@ -298,7 +298,7 @@ export function SearchExplorer() {
                   mode === m
                     ? m === "raw"
                       ? "bg-mist-500/25 text-mist-100"
-                      : "bg-brand-500 text-ink-950"
+                      : "bg-brand-500 text-[var(--on-accent)]"
                     : "text-mist-400 hover:text-mist-200",
                 )}
               >
@@ -316,7 +316,7 @@ export function SearchExplorer() {
                 setSelected({});
               }}
               placeholder="Search the way a buyer types…"
-              className="focus-ring w-full rounded-full border border-[var(--hairline)] bg-ink-950/50 px-4 py-2.5 text-sm text-mist-100 transition-colors placeholder:text-mist-600 hover:border-[var(--hairline-strong)] focus:border-brand-500"
+              className="focus-ring w-full rounded-full field px-4 py-2.5 text-sm text-mist-100 transition-colors placeholder:text-mist-600 hover:border-[var(--hairline-strong)] focus:border-brand-500"
             />
           </label>
 
@@ -366,7 +366,7 @@ export function SearchExplorer() {
           zeroNote="nothing to filter by"
         />
         <Panel className="px-5 py-4">
-          <p className="font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+          <p className="strapline text-[10px] text-mist-500">
             Top result
           </p>
           <p className="mt-1.5 truncate text-[15px] font-bold text-mist-100">
@@ -403,7 +403,7 @@ export function SearchExplorer() {
             <div className="max-h-[34rem] divide-y divide-[var(--hairline)] overflow-y-auto">
               {facets.map((g) => (
                 <div key={g.key} className="px-5 py-3">
-                  <p className="mb-1.5 font-mono text-[10px] tracking-[0.14em] text-mist-500 uppercase">
+                  <p className="mb-1.5 strapline text-[10px] text-mist-500">
                     {g.label}
                   </p>
                   <ul className="space-y-0.5">
@@ -425,7 +425,7 @@ export function SearchExplorer() {
                               "focus-ring flex w-full items-center gap-2 rounded px-1.5 py-1 text-left text-[13px] transition-colors",
                               active
                                 ? "bg-brand-500/15 text-brand-300"
-                                : "text-mist-300 hover:bg-white/5",
+                                : "text-mist-300 tint-hover",
                             )}
                           >
                             <span
@@ -517,7 +517,7 @@ export function SearchExplorer() {
                               .map((a) => (
                                 <span
                                   key={a.key}
-                                  className="rounded border border-[var(--hairline)] bg-white/[0.03] px-1.5 py-0.5 font-mono text-[10px] text-mist-400"
+                                  className="rounded border border-[var(--hairline)] tint-1 px-1.5 py-0.5 font-mono text-[10px] text-mist-400"
                                 >
                                   <span className="text-mist-600">
                                     {a.label}:
@@ -574,7 +574,7 @@ function DeltaCard({
 
   return (
     <Panel className="px-5 py-4">
-      <p className="font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+      <p className="strapline text-[10px] text-mist-500">
         {label}
       </p>
       <div className="mt-1.5 flex items-baseline gap-2">

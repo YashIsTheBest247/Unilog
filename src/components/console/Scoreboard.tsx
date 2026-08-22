@@ -29,7 +29,7 @@ function ScoreRing({ value, tone }: { value: number; tone: "dim" | "bright" }) {
           r={r}
           fill="none"
           strokeWidth="6"
-          className="stroke-white/[0.07]"
+          className="stroke-[var(--s-hover)]"
         />
         <circle
           cx="40"
@@ -80,7 +80,7 @@ export function Scoreboard({ product }: { product: EnrichedProduct }) {
         <div className="flex items-center gap-6 px-5 py-5">
           <div className="text-center">
             <ScoreRing value={before.total} tone="dim" />
-            <p className="mt-2 font-mono text-[10px] tracking-[0.16em] text-mist-500 uppercase">
+            <p className="mt-2 strapline text-[10px] text-mist-500">
               Raw feed
             </p>
           </div>
@@ -102,7 +102,7 @@ export function Scoreboard({ product }: { product: EnrichedProduct }) {
 
           <div className="text-center">
             <ScoreRing value={after.total} tone="bright" />
-            <p className="mt-2 font-mono text-[10px] tracking-[0.16em] text-brand-400 uppercase">
+            <p className="mt-2 strapline text-[10px] text-brand-500">
               Enriched
             </p>
           </div>

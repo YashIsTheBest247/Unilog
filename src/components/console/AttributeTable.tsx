@@ -122,8 +122,8 @@ export function AttributeTable({
                 className={cn(
                   "focus-ring rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors",
                   filter === f.id
-                    ? "bg-brand-500 text-ink-950"
-                    : "text-mist-400 hover:bg-white/5 hover:text-mist-200",
+                    ? "bg-brand-500 text-[var(--on-accent)]"
+                    : "text-mist-400 tint-hover hover:text-mist-200",
                 )}
               >
                 {f.label}
@@ -144,7 +144,7 @@ export function AttributeTable({
         <div className="divide-y divide-[var(--hairline)]">
           {groups.map(([group, attributes]) => (
             <section key={group}>
-              <h4 className="bg-white/[0.02] px-5 py-2 font-mono text-[10px] tracking-[0.18em] text-mist-500 uppercase">
+              <h4 className="tint-1 px-5 py-2 strapline text-[10px] text-mist-500">
                 {group}
               </h4>
               <ul className="divide-y divide-[var(--hairline)]">

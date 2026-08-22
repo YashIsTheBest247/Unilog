@@ -9,9 +9,9 @@ export const metadata = {
 
 export default function SearchPage() {
   return (
-    <div className="mx-auto max-w-[1500px] px-5 pt-14 pb-6 sm:px-8">
+    <div className="mx-auto max-w-[1500px] px-4 pt-12 pb-6 sm:px-8">
       <Eyebrow>Commerce impact</Eyebrow>
-      <h1 className="text-[clamp(2rem,3.6vw,2.9rem)] font-extrabold tracking-[-0.03em]">
+      <h1 className="text-[clamp(2.1rem,4vw,3.2rem)] font-extrabold tracking-[-0.04em]">
         The same storefront, twice
       </h1>
       <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-mist-400">

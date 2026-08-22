@@ -130,7 +130,7 @@ export function SourceIngest({
               "focus-ring rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors",
               tab === id
                 ? "bg-brand-500/15 text-brand-300"
-                : "text-mist-400 hover:bg-white/5 hover:text-mist-200",
+                : "text-mist-400 tint-hover hover:text-mist-200",
             )}
           >
             {label}
@@ -194,7 +194,7 @@ export function SourceIngest({
               onKeyDown={(e) => e.key === "Enter" && void handleUrl()}
               placeholder="https://manufacturer.example/products/77C-143-01"
               disabled={disabled || busy}
-              className="focus-ring min-w-[16rem] flex-1 rounded-lg border border-[var(--hairline)] bg-ink-950/50 px-3 py-2.5 font-mono text-[13px] text-mist-100 placeholder:text-mist-600 focus:border-brand-500"
+              className="focus-ring min-w-[16rem] flex-1 rounded-lg field px-3 py-2.5 font-mono text-[13px] text-mist-100 placeholder:text-mist-600 focus:border-brand-500"
             />
             <Button
               size="sm"
@@ -217,7 +217,7 @@ export function SourceIngest({
               onChange={(e) => setPasteTitle(e.target.value)}
               placeholder="Document title (optional)"
               disabled={disabled || busy}
-              className="focus-ring w-full rounded-lg border border-[var(--hairline)] bg-ink-950/50 px-3 py-2 text-[13px] text-mist-100 placeholder:text-mist-600 focus:border-brand-500"
+              className="focus-ring w-full rounded-lg field px-3 py-2 text-[13px] text-mist-100 placeholder:text-mist-600 focus:border-brand-500"
             />
             <textarea
               value={paste}
@@ -225,7 +225,7 @@ export function SourceIngest({
               placeholder={"Paste a specification block, a datasheet table, or a product page…"}
               rows={6}
               disabled={disabled || busy}
-              className="focus-ring w-full resize-y rounded-lg border border-[var(--hairline)] bg-ink-950/50 px-3 py-2.5 font-mono text-[12px] leading-relaxed text-mist-100 placeholder:text-mist-600 focus:border-brand-500"
+              className="focus-ring w-full resize-y rounded-lg field px-3 py-2.5 font-mono text-[12px] leading-relaxed text-mist-100 placeholder:text-mist-600 focus:border-brand-500"
             />
             <Button
               size="sm"
@@ -266,7 +266,7 @@ export function SourceIngest({
                 </p>
 
                 <label className="mt-2 flex items-center gap-2">
-                  <span className="font-mono text-[10px] tracking-[0.14em] text-mist-500 uppercase">
+                  <span className="strapline text-[10px] text-mist-500">
                     Treat as
                   </span>
                   <select
@@ -281,7 +281,7 @@ export function SourceIngest({
                         ),
                       )
                     }
-                    className="focus-ring rounded border border-[var(--hairline)] bg-ink-950 px-2 py-1 text-[12px] text-mist-200"
+                    className="focus-ring rounded border border-[var(--hairline)] bg-[var(--s-card)] px-2 py-1 text-[12px] text-mist-200"
                   >
                     {KINDS.map((k) => (
                       <option key={k} value={k}>
@@ -297,7 +297,7 @@ export function SourceIngest({
                 disabled={disabled}
                 onClick={() => onChange(sources.filter((x) => x.id !== s.id))}
                 aria-label={`Remove ${s.title}`}
-                className="focus-ring shrink-0 rounded px-2 py-1 text-[12px] text-mist-500 hover:bg-white/5 hover:text-reject-400"
+                className="focus-ring shrink-0 rounded px-2 py-1 text-[12px] text-mist-500 tint-hover hover:text-reject-400"
               >
                 remove
               </button>

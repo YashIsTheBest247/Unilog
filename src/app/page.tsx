@@ -1,44 +1,258 @@
 import Link from "next/link";
 import { EnrichConsole } from "@/components/console/EnrichConsole";
-import { Badge, Button, Eyebrow } from "@/components/ui/kit";
+import { Arrow } from "@/components/site/Header";
+import { Badge, StepCard } from "@/components/ui/kit";
+
+const STEPS = [
+  {
+    title: "Give it whatever you have",
+    body: "A supplier row, a PDF datasheet, a product URL, or a pasted spec block. Nothing needs to be clean first.",
+    preview: <PreviewInput />,
+  },
+  {
+    title: "The schema decides what to look for",
+    body: "The SKU is classified into its taxonomy, and that class dictates exactly which attributes must exist, in which units, with which legal values.",
+    preview: <PreviewSchema />,
+  },
+  {
+    title: "A critic tries to refute every value",
+    body: "An adversarial pass checks each claim against its source and against every other source. Contradicted values never reach the record.",
+    preview: <PreviewCritic />,
+  },
+  {
+    title: "Only defensible data publishes",
+    body: "Confidence is assembled from source authority, corroboration and the critic. Above 92% it publishes; below, a human sees it.",
+    preview: <PreviewGate />,
+  },
+];
 
 export default function HomePage() {
   return (
-    <div className="mx-auto max-w-[1500px] px-5 sm:px-8">
+    <div className="px-3 sm:px-5">
       {/* Hero ---------------------------------------------------------- */}
-      <section className="relative overflow-hidden pt-14 pb-12 sm:pt-20">
-        <div className="grid-lines pointer-events-none absolute inset-0 -z-10 opacity-40 [mask-image:radial-gradient(70%_60%_at_50%_0%,black,transparent)]" />
+      <section className="hero-band relative mt-3 overflow-hidden rounded-[28px] px-6 py-16 sm:px-12 sm:py-24">
+        <div className="grid-lines pointer-events-none absolute inset-0 opacity-60 [mask-image:radial-gradient(70%_70%_at_70%_0%,black,transparent)]" />
 
-        <div className="max-w-3xl animate-rise">
-          <Eyebrow>Taxonomy-driven enrichment engine</Eyebrow>
-          <h1 className="text-[clamp(2.2rem,4.8vw,3.6rem)] leading-[1.03] font-extrabold tracking-[-0.035em]">
-            <span className="text-gradient">Limited product data in.</span>
-            <br />
-            Defensible product intelligence out.
-          </h1>
-          <p className="mt-6 max-w-2xl text-[17px] leading-relaxed text-mist-300">
-            Extraction is the easy half. This engine classifies a SKU into its
-            taxonomy, fills the attribute schema that class demands, then sends
-            an adversarial critic to refute every value against its source — so
-            nothing gets published that can&apos;t be defended.
+        <div className="animate-rise relative mx-auto max-w-[1400px]">
+          <p className="strapline text-white/45">
+            AI-powered product intelligence
           </p>
 
-          <div className="mt-7 flex flex-wrap items-center gap-2">
-            <Badge tone="brand">attribute-level provenance</Badge>
-            <Badge tone="verify">adversarial validation</Badge>
-            <Badge tone="amber">confidence-gated publishing</Badge>
-            <Link href="/search" className="ml-1">
-              <Button size="sm" variant="outline">
-                See the commerce impact
-              </Button>
+          <h1 className="mt-6 text-[clamp(2.6rem,6.4vw,5.2rem)] leading-[0.98] font-extrabold tracking-[-0.045em] text-white">
+            Scattered specs
+            <br />
+            into{" "}
+            <span className="font-light text-white/55 italic">
+              provable product data
+            </span>
+          </h1>
+
+          <p className="mt-8 max-w-xl text-[17px] leading-relaxed text-white/70">
+            Extraction is the easy half. This engine fills the attribute schema
+            a product&apos;s class demands, then sends an adversarial critic to
+            refute every value against its source — so nothing publishes that
+            can&apos;t be defended.
+          </p>
+
+          <p className="strapline mt-7 text-white/40">
+            Cited evidence. Resolved conflicts. Gated publishing.
+          </p>
+
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <Link
+              href="#console"
+              className="focus-ring inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-[15px] font-semibold text-[#101013] transition-opacity hover:opacity-90"
+            >
+              Run an enrichment
+              <Arrow />
+            </Link>
+            <Link
+              href="/search"
+              className="focus-ring inline-flex items-center gap-2 rounded-full border border-white/25 px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-white/10"
+            >
+              See the commerce impact
+            </Link>
+            <Link
+              href="/batch"
+              className="focus-ring inline-flex items-center gap-2 rounded-full px-5 py-3.5 text-[15px] font-semibold text-white/70 transition-colors hover:text-white"
+            >
+              Catalog run
+              <Arrow />
             </Link>
           </div>
+
+          <dl className="mt-12 flex flex-wrap gap-x-10 gap-y-5 border-t border-white/12 pt-7">
+            <Stat value="479/479" label="quotes anchored to their source" />
+            <Stat value="91%" label="attributes cleared to auto-publish" />
+            <Stat value="36 → 96" label="average data quality" />
+          </dl>
         </div>
       </section>
 
-      <section id="console" className="pb-12">
+      {/* How it works -------------------------------------------------- */}
+      <section className="mx-auto max-w-[1400px] px-2 pt-20 sm:px-3">
+        <h2 className="text-[clamp(2rem,3.6vw,3rem)] leading-tight font-extrabold tracking-[-0.035em]">
+          How it works
+        </h2>
+        <p className="mt-3 max-w-xl text-[16px] text-mist-400">
+          Eight deterministic stages. Every one leaves a trace you can replay.
+        </p>
+
+        <div className="mt-9 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {STEPS.map((s, i) => (
+            <StepCard
+              key={s.title}
+              index={i + 1}
+              title={s.title}
+              preview={s.preview}
+            >
+              {s.body}
+            </StepCard>
+          ))}
+        </div>
+      </section>
+
+      {/* Console ------------------------------------------------------- */}
+      <section
+        id="console"
+        className="mx-auto max-w-[1500px] scroll-mt-24 px-2 pt-20 sm:px-3"
+      >
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 className="text-[clamp(2rem,3.6vw,3rem)] leading-tight font-extrabold tracking-[-0.035em]">
+              The console
+            </h2>
+            <p className="mt-3 max-w-xl text-[16px] text-mist-400">
+              Run a SKU and watch the pipeline think. Click any attribute to
+              open the exact span of the source it came from.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Badge tone="brand">attribute-level provenance</Badge>
+            <Badge tone="verify">adversarial validation</Badge>
+            <Badge tone="amber">confidence gating</Badge>
+          </div>
+        </div>
+
         <EnrichConsole />
       </section>
+    </div>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <dd className="font-mono text-[26px] leading-none font-bold text-white">
+        {value}
+      </dd>
+      <dt className="mt-2 text-[13px] text-white/50">{label}</dt>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------- card previews */
+
+function PreviewInput() {
+  return (
+    <div className="w-full space-y-2">
+      <div className="flex gap-1.5">
+        {["PDF", "URL", "Paste"].map((t, i) => (
+          <span
+            key={t}
+            className={
+              i === 0
+                ? "rounded-full bg-brand-500/15 px-2.5 py-1 font-mono text-[10px] text-brand-600"
+                : "rounded-full border border-[var(--hairline)] px-2.5 py-1 font-mono text-[10px] text-mist-500"
+            }
+          >
+            {t}
+          </span>
+        ))}
+      </div>
+      <p className="truncate rounded-lg border border-[var(--hairline)] bg-[var(--s-card)] px-2.5 py-2 font-mono text-[11px] text-mist-400">
+        BALL VLV 1/2 3PC SS FP LKG
+      </p>
+    </div>
+  );
+}
+
+function PreviewSchema() {
+  return (
+    <ul className="w-full space-y-1.5">
+      {[
+        ["Body Material", "enum"],
+        ["Pressure (WOG)", "psi"],
+        ["Nominal Size", "in"],
+      ].map(([label, unit]) => (
+        <li
+          key={label}
+          className="flex items-center justify-between rounded-lg border border-[var(--hairline)] bg-[var(--s-card)] px-2.5 py-1.5"
+        >
+          <span className="text-[11px] text-mist-400">{label}</span>
+          <span className="font-mono text-[10px] text-brand-600">{unit}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function PreviewCritic() {
+  return (
+    <ul className="w-full space-y-1.5">
+      {[
+        ["2000 psi", true],
+        ["1000 psi", false],
+        ["600 psi", false],
+      ].map(([value, kept]) => (
+        <li
+          key={String(value)}
+          className={
+            kept
+              ? "flex items-center gap-2 rounded-lg border border-verify-400/30 bg-verify-400/10 px-2.5 py-1.5"
+              : "flex items-center gap-2 rounded-lg border border-reject-400/25 bg-reject-400/[0.07] px-2.5 py-1.5"
+          }
+        >
+          <span
+            className={
+              kept
+                ? "font-mono text-[11px] text-verify-400"
+                : "font-mono text-[11px] text-reject-400 line-through"
+            }
+          >
+            {value}
+          </span>
+          <span className="ml-auto font-mono text-[9px] text-mist-500">
+            {kept ? "kept" : "refuted"}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function PreviewGate() {
+  return (
+    <div className="w-full space-y-2.5">
+      {[
+        ["Published", 0.91, "bg-verify-400"],
+        ["Review", 0.09, "bg-amber-500"],
+      ].map(([label, value, bar]) => (
+        <div key={String(label)}>
+          <div className="mb-1 flex justify-between">
+            <span className="text-[11px] text-mist-400">{String(label)}</span>
+            <span className="font-mono text-[10px] text-mist-500">
+              {Math.round(Number(value) * 100)}%
+            </span>
+          </div>
+          <div className="tint-3 h-1.5 overflow-hidden rounded-full">
+            <div
+              className={`h-full rounded-full ${bar}`}
+              style={{ width: `${Number(value) * 100}%` }}
+            />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

@@ -1,54 +1,59 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------
-   Unilog-derived design tokens.
-   Palette sampled from unilogcorp.com: navy #0c2a4d / #04122b,
-   electric blue #009eff, amber #ff9d00, slate greys #9aa6b8 / #5a6b82.
+   Design tokens.
+
+   Two layers on purpose. The `@theme` block below names colours
+   semantically and points each one at a plain CSS variable; those
+   variables are then redefined per theme further down. That indirection
+   is what lets every `text-mist-400` in the app follow a light/dark
+   switch without a single component knowing a theme exists.
+
+   Light is the default surface: a soft grey canvas, white cards, near
+   black type. The hero is a deliberate dark band cut into it. The accent
+   stays Unilog's electric blue, used sparingly - the rest of the palette
+   is intentionally neutral so the data does the talking.
    ------------------------------------------------------------------ */
 @theme {
   --font-sans: var(--font-figtree), "Open Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* Ground */
-  --color-ink-950: #04122b;
-  --color-ink-900: #071b38;
-  --color-ink-850: #0a2445;
-  --color-ink-800: #0c2a4d;
-  --color-ink-700: #123761;
-  --color-ink-600: #1a4a7d;
+  /* Surfaces */
+  --color-ink-950: var(--s-deep);
+  --color-ink-900: var(--s-sunken);
+  --color-ink-850: var(--s-card);
+  --color-ink-800: var(--s-raised);
+  --color-ink-700: var(--s-hover);
+  --color-ink-600: var(--s-line);
 
   /* Brand */
-  --color-brand-300: #7ccbff;
-  --color-brand-400: #38b6ff;
-  --color-brand-500: #009eff;
-  --color-brand-600: #0077cc;
+  --color-brand-300: var(--a-soft);
+  --color-brand-400: var(--a-light);
+  --color-brand-500: var(--a-base);
+  --color-brand-600: var(--a-deep);
   --color-brand-700: #005ea3;
 
   /* Signal */
-  --color-amber-400: #fbc756;
-  --color-amber-500: #ff9d00;
-  --color-verify-400: #34d17f;
-  --color-verify-500: #16a34a;
-  --color-reject-400: #ff6b6b;
-  --color-reject-500: #e23d3d;
+  --color-amber-400: var(--sig-amber-soft);
+  --color-amber-500: var(--sig-amber);
+  --color-verify-400: var(--sig-verify);
+  --color-verify-500: var(--sig-verify-deep);
+  --color-reject-400: var(--sig-reject);
+  --color-reject-500: var(--sig-reject-deep);
 
-  /* Text on navy.
-     Tuned so every step used for text clears WCAG AA against the
-     darkest ground (#04122b): 300 is 7.9:1, 400 is 6.5:1, 500 is 5.0:1.
-     600 sits at 3.8:1 and is reserved for decorative and placeholder
-     text; 700 is a border tone and never carries type. */
-  --color-mist-100: #eef1f6;
-  --color-mist-200: #cfd8e5;
-  --color-mist-300: #a9b6c8;
-  --color-mist-400: #8b9bb2;
-  --color-mist-500: #76869e;
-  --color-mist-600: #63738c;
-  --color-mist-700: #354356;
+  /* Type ramp: 100 is the strongest, 600 the faintest. */
+  --color-mist-100: var(--t1);
+  --color-mist-200: var(--t2);
+  --color-mist-300: var(--t3);
+  --color-mist-400: var(--t4);
+  --color-mist-500: var(--t5);
+  --color-mist-600: var(--t6);
+  --color-mist-700: var(--t7);
 
-  --radius-card: 14px;
+  --radius-card: 20px;
 
   --animate-shimmer: shimmer 2.2s linear infinite;
-  --animate-rise: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-rise: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-pulse-ring: pulse-ring 1.6s ease-out infinite;
 }
 
@@ -57,97 +62,231 @@
   100% { background-position: 200% 0; }
 }
 @keyframes rise {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes pulse-ring {
-  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-brand-500) 55%, transparent); }
-  70%  { box-shadow: 0 0 0 9px color-mix(in srgb, var(--color-brand-500) 0%, transparent); }
-  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-brand-500) 0%, transparent); }
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--a-base) 45%, transparent); }
+  70%  { box-shadow: 0 0 0 9px color-mix(in srgb, var(--a-base) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--a-base) 0%, transparent); }
 }
 
+/* ------------------------------------------------------- light theme */
 :root {
-  color-scheme: dark;
-  --surface: color-mix(in srgb, var(--color-ink-900) 82%, black);
-  --surface-raised: color-mix(in srgb, var(--color-ink-850) 88%, black);
-  --hairline: color-mix(in srgb, var(--color-brand-500) 16%, transparent);
-  --hairline-strong: color-mix(in srgb, var(--color-brand-500) 30%, transparent);
+  color-scheme: light;
+
+  --s-deep: #ffffff;
+  --s-sunken: #fafafa;
+  --s-card: #ffffff;
+  --s-raised: #f4f4f5;
+  --s-hover: #ededf0;
+  --s-line: #e4e4e7;
+
+  --a-soft: #4db4ff;
+  --a-light: #0d95f0;
+  --a-base: #007ecc;
+  --a-deep: #0064a3;
+
+  --sig-verify: #12864a;
+  --sig-verify-deep: #0f6f3d;
+  --sig-amber: #b06a00;
+  --sig-amber-soft: #8a5400;
+  --sig-reject: #c62d2d;
+  --sig-reject-deep: #a32424;
+
+  --t1: #0e0e11;
+  --t2: #26262c;
+  --t3: #45454f;
+  --t4: #5c5c68;
+  --t5: #74747f;
+  --t6: #96969f;
+  --t7: #c9c9d0;
+
+  --canvas: #f2f2f4;
+  --hairline: rgba(16, 16, 20, 0.09);
+  --hairline-strong: rgba(16, 16, 20, 0.16);
+  --tint: 16, 16, 20;
+  --field: #ffffff;
+  --scrim: rgba(16, 16, 20, 0.42);
+  --on-accent: #ffffff;
+
+  --shadow-card: 0 1px 2px rgba(16, 16, 20, 0.04),
+    0 10px 30px -18px rgba(16, 16, 20, 0.18);
+  --shadow-float: 0 2px 6px rgba(16, 16, 20, 0.06),
+    0 18px 44px -24px rgba(16, 16, 20, 0.3);
 }
 
-* { border-color: var(--hairline); }
+/* -------------------------------------------------------- dark theme */
+:root[data-theme="dark"] {
+  color-scheme: dark;
 
-html { scroll-behavior: smooth; }
+  --s-deep: #0b0b0e;
+  --s-sunken: #0f0f13;
+  --s-card: #16161b;
+  --s-raised: #1c1c22;
+  --s-hover: #24242b;
+  --s-line: #2c2c34;
+
+  --a-soft: #7ccbff;
+  --a-light: #38b6ff;
+  --a-base: #009eff;
+  --a-deep: #0077cc;
+
+  --sig-verify: #34d17f;
+  --sig-verify-deep: #16a34a;
+  --sig-amber: #ff9d00;
+  --sig-amber-soft: #fbc756;
+  --sig-reject: #ff6b6b;
+  --sig-reject-deep: #e23d3d;
+
+  --t1: #f5f5f7;
+  --t2: #d9d9e0;
+  --t3: #b0b0bb;
+  --t4: #92929e;
+  --t5: #7b7b87;
+  --t6: #62626d;
+  --t7: #3a3a44;
+
+  --canvas: #08080a;
+  --hairline: rgba(255, 255, 255, 0.09);
+  --hairline-strong: rgba(255, 255, 255, 0.18);
+  --tint: 255, 255, 255;
+  --field: #101014;
+  --scrim: rgba(0, 0, 0, 0.62);
+  --on-accent: #06121c;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 10px 30px -18px rgba(0, 0, 0, 0.7);
+  --shadow-float: 0 2px 8px rgba(0, 0, 0, 0.5),
+    0 20px 50px -24px rgba(0, 0, 0, 0.8);
+}
+
+* {
+  border-color: var(--hairline);
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--canvas);
+}
 
 body {
-  background:
-    radial-gradient(1100px 620px at 82% -8%, color-mix(in srgb, var(--color-brand-600) 26%, transparent), transparent 62%),
-    radial-gradient(760px 520px at 6% 4%, color-mix(in srgb, var(--color-ink-600) 42%, transparent), transparent 58%),
-    var(--color-ink-950);
-  background-attachment: fixed;
-  color: var(--color-mist-100);
+  background: var(--canvas);
+  color: var(--t1);
   font-feature-settings: "cv02", "cv03", "cv11";
   -webkit-font-smoothing: antialiased;
   min-height: 100dvh;
 }
 
-/* Utility layer -------------------------------------------------- */
+/* ---------------------------------------------------------- utilities */
+
 @utility panel {
-  background: linear-gradient(
-    170deg,
-    color-mix(in srgb, var(--color-ink-850) 72%, transparent),
-    color-mix(in srgb, var(--color-ink-950) 78%, transparent)
-  );
+  background: var(--s-card);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-card);
-  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-card);
 }
 
 @utility panel-flat {
-  background: color-mix(in srgb, var(--color-ink-900) 60%, transparent);
+  background: var(--s-raised);
   border: 1px solid var(--hairline);
-  border-radius: var(--radius-card);
+  border-radius: 14px;
 }
 
 @utility hair-x {
   border-bottom: 1px solid var(--hairline);
 }
 
+/** A neutral lift that reads correctly on either theme. */
+@utility tint-1 {
+  background-color: rgb(var(--tint) / 0.03);
+}
+@utility tint-2 {
+  background-color: rgb(var(--tint) / 0.05);
+}
+@utility tint-3 {
+  background-color: rgb(var(--tint) / 0.08);
+}
+@utility tint-hover {
+  &:hover {
+    background-color: rgb(var(--tint) / 0.05);
+  }
+}
+
+@utility field {
+  background: var(--field);
+  border: 1px solid var(--hairline-strong);
+}
+
+/** The dark band the hero sits in, cut into the light canvas. */
+@utility hero-band {
+  background:
+    radial-gradient(
+      120% 90% at 82% 0%,
+      rgba(0, 158, 255, 0.16),
+      transparent 62%
+    ),
+    radial-gradient(90% 80% at 8% 100%, rgba(255, 157, 0, 0.08), transparent 60%),
+    #101013;
+  color: #f5f5f7;
+}
+
+@utility grid-lines {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 52px 52px;
+}
+
 @utility text-gradient {
-  background: linear-gradient(96deg, #ffffff 8%, var(--color-brand-300) 58%, var(--color-brand-500) 100%);
+  background: linear-gradient(94deg, #ffffff 12%, #cfe9ff 52%, #63b8ff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-@utility grid-lines {
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--color-brand-500) 7%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--color-brand-500) 7%, transparent) 1px, transparent 1px);
-  background-size: 46px 46px;
+/** The light, tracked, uppercase strapline the reference leans on. */
+@utility strapline {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 @utility focus-ring {
   outline: none;
   &:focus-visible {
-    outline: 2px solid var(--color-brand-400);
+    outline: 2px solid var(--a-base);
     outline-offset: 2px;
   }
 }
 
-::selection { background: color-mix(in srgb, var(--color-brand-500) 40%, transparent); }
+::selection {
+  background: color-mix(in srgb, var(--a-base) 26%, transparent);
+}
 
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 ::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--color-brand-500) 22%, transparent);
+  background: rgb(var(--tint) / 0.18);
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
-::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--color-brand-500) 40%, transparent); background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--tint) / 0.3);
+  background-clip: padding-box;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
