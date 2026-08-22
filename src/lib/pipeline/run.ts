@@ -26,19 +26,29 @@ import { critique, normalize } from "./validate";
 /** Keeps the stage visualisation legible when a stage returns instantly. */
 const MIN_STAGE_MS = 220;
 
-async function pace(started: number) {
-  const elapsed = Date.now() - started;
-  if (elapsed < MIN_STAGE_MS) {
-    await new Promise((r) => setTimeout(r, MIN_STAGE_MS - elapsed));
-  }
-  return Math.max(elapsed, 1);
+export interface RunOptions {
+  /**
+   * Pad fast stages so the console animation stays readable. Off for
+   * batch work, where the padding would dominate the wall clock.
+   */
+  paced?: boolean;
 }
 
 export async function* runPipeline(
   raw: RawProduct,
+  options: RunOptions = {},
 ): AsyncGenerator<TraceEvent> {
+  const { paced = true } = options;
   const runStarted = Date.now();
   let anyLive = false;
+
+  async function pace(started: number) {
+    const elapsed = Date.now() - started;
+    if (paced && elapsed < MIN_STAGE_MS) {
+      await new Promise((r) => setTimeout(r, MIN_STAGE_MS - elapsed));
+    }
+    return Math.max(elapsed, 1);
+  }
 
   try {
     /* ------------------------------------------------ 1. classify */
@@ -269,7 +279,7 @@ export async function* runPipeline(
 
 /** Non-streaming convenience wrapper, used by the batch runner. */
 export async function enrich(raw: RawProduct): Promise<EnrichedProduct | null> {
-  for await (const event of runPipeline(raw)) {
+  for await (const event of runPipeline(raw, { paced: false })) {
     if (event.type === "result") return event.product;
   }
   return null;

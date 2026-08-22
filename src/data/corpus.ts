@@ -16,6 +16,8 @@
  * ------------------------------------------------------------------ */
 
 import type { EvidenceSource, RawProduct } from "@/lib/types";
+import { VARIANTS } from "./variants";
+import type { VariantRow, VariantSpec } from "./variants";
 
 export interface CorpusEntry {
   raw: RawProduct;
@@ -744,12 +746,93 @@ export const CORPUS: CorpusEntry[] = [apollo, nipple, butterfly, flange, nibco];
 
 export const CORPUS_BY_ID = new Map(CORPUS.map((c) => [c.raw.id, c]));
 
-export function findCorpusEntry(mpn: string, brand: string): CorpusEntry | undefined {
+export function findCorpusEntry(
+  mpn: string,
+  brand: string,
+): CorpusEntry | undefined {
   const m = mpn.trim().toLowerCase();
   const b = brand.trim().toLowerCase();
-  return CORPUS.find(
+  return CATALOG.find(
     (c) =>
       c.raw.mpn.toLowerCase() === m ||
       (c.raw.brand.toLowerCase() === b && c.raw.mpn.toLowerCase().includes(m)),
   );
+}
+
+/* ------------------------------------------------------------------ *
+ * Variant expansion.
+ *
+ * Siblings named by a parent's dimension table become first-class SKUs.
+ * They inherit the parent's evidence pool, minus the row-dependent
+ * claims, and gain the claims their own table row carries.
+ * ------------------------------------------------------------------ */
+
+function deriveVariant(
+  parent: CorpusEntry,
+  spec: VariantSpec,
+  row: VariantRow,
+): CorpusEntry {
+  const varying = new Set(spec.variantKeys);
+
+  const sources = parent.sources.map((source) => {
+    // Row-dependent attributes come from the table alone; a sibling must
+    // not inherit "Size: 1/2 in." from the parent's marketing page.
+    const kept = source.claims.filter((c) => !varying.has(c.key));
+    return {
+      ...source,
+      claims:
+        source.id === spec.tableSourceId ? [...kept, ...row.claims] : kept,
+    };
+  });
+
+  return {
+    raw: {
+      id: `sku-${row.mpn.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+      mpn: row.mpn,
+      brand: parent.raw.brand,
+      description: row.description,
+      supplierCategory: parent.raw.supplierCategory,
+      listPrice: row.listPrice,
+      uom: parent.raw.uom,
+    },
+    expectedClass: parent.expectedClass,
+    sources,
+  };
+}
+
+/** Every SKU the engine can answer for: the seeds plus their siblings. */
+export const CATALOG: CorpusEntry[] = (() => {
+  const out = [...CORPUS];
+  for (const spec of VARIANTS) {
+    const parent = CORPUS_BY_ID.get(spec.parentId);
+    if (!parent) continue;
+    for (const row of spec.rows) out.push(deriveVariant(parent, spec, row));
+  }
+  return out;
+})();
+
+export const CATALOG_BY_MPN = new Map(
+  CATALOG.map((c) => [c.raw.mpn.toLowerCase(), c]),
+);
+
+/** Ids of the hand-authored seeds, as opposed to table-derived siblings. */
+export const SEED_IDS = new Set(CORPUS.map((c) => c.raw.id));
+
+/**
+ * Every claim quote must be a literal substring of its excerpt, or the
+ * provenance highlighting is a lie. Checked at request time so the
+ * number shown in the UI is measured, not asserted.
+ */
+export function verifyProvenance() {
+  let total = 0;
+  let anchored = 0;
+  for (const entry of CATALOG) {
+    for (const source of entry.sources) {
+      for (const claim of source.claims) {
+        total++;
+        if (source.excerpt.includes(claim.quote)) anchored++;
+      }
+    }
+  }
+  return { total, anchored };
 }
