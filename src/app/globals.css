@@ -118,6 +118,10 @@
   --scrim: rgba(16, 16, 20, 0.42);
   --on-accent: #ffffff;
 
+  --scroll-track: rgba(16, 16, 20, 0.05);
+  --scroll-thumb: rgba(16, 16, 20, 0.3);
+  --scroll-thumb-hover: rgba(16, 16, 20, 0.48);
+
   --shadow-card: 0 1px 2px rgba(16, 16, 20, 0.04),
     0 10px 30px -18px rgba(16, 16, 20, 0.18);
   --shadow-float: 0 2px 6px rgba(16, 16, 20, 0.06),
@@ -163,6 +167,10 @@
   --scrim: rgba(0, 0, 0, 0.62);
   --on-accent: #06121c;
 
+  --scroll-track: rgba(255, 255, 255, 0.05);
+  --scroll-thumb: rgba(255, 255, 255, 0.26);
+  --scroll-thumb-hover: rgba(255, 255, 255, 0.42);
+
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4),
     0 10px 30px -18px rgba(0, 0, 0, 0.7);
   --shadow-float: 0 2px 8px rgba(0, 0, 0, 0.5),
@@ -204,6 +212,9 @@ html {
   background: var(--canvas);
   /* Anchor targets clear the floating header. */
   scroll-padding-top: 6.5rem;
+  /* Reserve the track so the layout does not shift the moment a page
+     becomes long enough to scroll. */
+  scrollbar-gutter: stable;
 }
 
 /* ---------------------------------------------------------- motion */
@@ -340,22 +351,50 @@ body {
   background: color-mix(in srgb, var(--a-base) 26%, transparent);
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+/* Scrollbars.
+   The previous thumb sat at 18% alpha behind a transparent 2px border,
+   which left roughly six visible pixels of near-white on a near-white
+   canvas - present, but invisible. These values are deliberately solid
+   enough to find without looking for them. Firefox gets the standard
+   properties; WebKit and Chromium get the pseudo-elements. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
 }
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
 ::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.15s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-thumb-hover);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
   background: transparent;
 }
-::-webkit-scrollbar-thumb {
-  background: rgb(var(--tint) / 0.18);
-  border-radius: 999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--tint) / 0.3);
-  background-clip: padding-box;
+
+/* Panels that scroll internally get a slimmer treatment so the chrome
+   does not compete with the content inside a card. */
+.panel ::-webkit-scrollbar,
+.panel-flat ::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
 }
 
 @media (prefers-reduced-motion: reduce) {
