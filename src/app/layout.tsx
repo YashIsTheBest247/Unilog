@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { THEME_INIT } from "@/components/site/ThemeToggle";
+import { INTRO_INIT, IntroVideo } from "@/components/site/IntroVideo";
 import {
   PageTransition,
   RouteProgress,
@@ -108,6 +109,7 @@ export default function RootLayout({
         {/* Runs before first paint so the page never flashes the wrong
             theme on load. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        <script dangerouslySetInnerHTML={{ __html: INTRO_INIT }} />
       </head>
       <body className="font-sans antialiased">
         <a
@@ -117,9 +119,10 @@ export default function RootLayout({
           Skip to content
         </a>
 
+        <IntroVideo />
         <RouteProgress />
 
-        <div className="relative flex min-h-dvh flex-col">
+        <div id="app-shell" className="relative flex min-h-dvh flex-col">
           <Header />
           <main id="main" className="flex-1">
             <PageTransition>{children}</PageTransition>

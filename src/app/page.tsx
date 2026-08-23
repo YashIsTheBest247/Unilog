@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { EnrichConsole } from "@/components/console/EnrichConsole";
 import { Arrow } from "@/components/site/Header";
+import { ScrollLink } from "@/components/site/ScrollLink";
 import { Badge, StepCard } from "@/components/ui/kit";
 import { Reveal } from "@/components/motion/Reveal";
 
@@ -61,13 +62,13 @@ export default function HomePage() {
           </p>
 
           <div className="mt-[clamp(1.25rem,2.4vh,2rem)] flex flex-wrap items-center gap-2.5">
-            <Link
+            <ScrollLink
               href="#console"
               className="focus-ring inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[15px] font-semibold text-[#101013] transition-opacity hover:opacity-90"
             >
               Run an enrichment
               <Arrow />
-            </Link>
+            </ScrollLink>
             <Link
               href="/search"
               className="focus-ring inline-flex items-center gap-2 rounded-full border border-white/25 px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-white/10"

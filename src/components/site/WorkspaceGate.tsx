@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { ScrollLink } from "@/components/site/ScrollLink";
 import { useState } from "react";
 import { Button, Panel } from "@/components/ui/kit";
 import { Arrow } from "@/components/site/Header";
@@ -47,13 +47,13 @@ export function WorkspaceGate({
         </p>
 
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-          <Link
+          <ScrollLink
             href="/#console"
             className="focus-ring inline-flex items-center gap-2 rounded-full bg-mist-100 px-5 py-2.5 text-sm font-semibold text-[var(--s-card)] transition-opacity hover:opacity-88"
           >
             Enrich a product
             <Arrow />
-          </Link>
+          </ScrollLink>
           <Button variant="outline" size="md" disabled={busy} onClick={load}>
             {busy ? "Loading…" : "Load the sample catalogue"}
           </Button>

@@ -207,6 +207,21 @@ svg .node-hit {
   cursor: pointer;
 }
 
+/* The inline guard sets data-intro before first paint, so the landing
+   page never flashes in the moment between hydration and the splash
+   mounting. Both the component and a timeout clear it, so a scripting
+   failure cannot leave the page covered. */
+html[data-intro="pending"] #app-shell {
+  visibility: hidden;
+}
+html[data-intro="pending"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+  background: #000;
+}
+
 html {
   scroll-behavior: smooth;
   background: var(--canvas);

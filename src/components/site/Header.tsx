@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
+import { ScrollLink } from "./ScrollLink";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -61,7 +62,7 @@ export function Header() {
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
 
-          <Link
+          <ScrollLink
             href="/#console"
             className="focus-ring inline-flex items-center gap-1.5 rounded-full bg-mist-100 px-3.5 py-2.5 text-[14px] font-semibold text-[var(--s-card)] transition-opacity hover:opacity-88 sm:px-5"
           >
@@ -70,7 +71,7 @@ export function Header() {
             <span className="hidden sm:inline">Run enrichment</span>
             <span className="sm:hidden">Enrich</span>
             <Arrow />
-          </Link>
+          </ScrollLink>
         </div>
       </div>
 
