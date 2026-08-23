@@ -133,7 +133,7 @@ export function GraphExplorer() {
         </Panel>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)]">
         {/* Picker ------------------------------------------------------ */}
         <Panel className="h-fit overflow-hidden lg:sticky lg:top-24">
           <PanelHeader title="Products" hint="Pick a node to explore" />

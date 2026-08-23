@@ -363,7 +363,7 @@ export function SearchExplorer() {
       </div>
 
       {/* Facets + results ---------------------------------------------- */}
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)]">
         <Panel className="h-fit overflow-hidden lg:sticky lg:top-20">
           <PanelHeader
             title="Refine"

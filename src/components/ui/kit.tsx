@@ -105,7 +105,11 @@ export function PanelHeader({
           <p className="mt-0.5 truncate text-[13px] text-mist-500">{hint}</p>
         )}
       </div>
-      {right && <div className="ml-auto shrink-0">{right}</div>}
+      {right && (
+        // Not shrink-0: on a phone these are filter chips that have to
+        // be allowed to wrap rather than run off the card.
+        <div className="ml-auto min-w-0">{right}</div>
+      )}
     </div>
   );
 }

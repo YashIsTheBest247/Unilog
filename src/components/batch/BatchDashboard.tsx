@@ -40,7 +40,7 @@ export function BatchDashboard() {
         onClear={clearSamples}
       />
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <Panel className="overflow-hidden">
           <PanelHeader
             title="Throughput"
@@ -170,7 +170,7 @@ export function BatchDashboard() {
         </Panel>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <Panel className="overflow-hidden">
           <PanelHeader
             title="Human review queue"

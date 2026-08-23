@@ -154,7 +154,7 @@ export function AttributeTable({
                       type="button"
                       onClick={() => onInspect(a)}
                       aria-label={`${a.label}: ${a.value ?? "no evidence"}. Open the evidence behind this value.`}
-                      className="focus-ring group grid w-full grid-cols-[minmax(0,1fr)_auto] items-start gap-3 px-5 py-3 text-left transition-colors hover:bg-brand-500/[0.06] sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)_auto]"
+                      className="focus-ring group flex w-full flex-col gap-1.5 px-5 py-3 text-left transition-colors hover:bg-brand-500/[0.06] sm:grid sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)_auto] sm:items-start sm:gap-3"
                     >
                       {/* Label ------------------------------------- */}
                       <span className="flex items-center gap-1.5 pt-0.5 text-[13px] font-medium text-mist-400">

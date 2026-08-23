@@ -37,7 +37,7 @@ export default function HomePage() {
           step of the type scale is fluid, which keeps the headline, the
           calls to action and the stat row above the fold on a laptop
           without shrinking them into insignificance on a large screen. */}
-      <section className="hero-band relative mt-3 flex min-h-[min(46rem,calc(100dvh-6.5rem))] flex-col justify-center overflow-hidden rounded-[28px] px-6 py-10 sm:px-12">
+      <section className="hero-band relative mt-3 flex min-h-[calc(100svh-9.5rem)] flex-col justify-center overflow-hidden rounded-[28px] px-5 py-9 sm:min-h-[min(46rem,calc(100dvh-6.5rem))] sm:px-12 sm:py-10">
         <div className="grid-lines pointer-events-none absolute inset-0 opacity-60 [mask-image:radial-gradient(70%_70%_at_70%_0%,black,transparent)]" />
 
         <div className="animate-rise relative mx-auto w-full max-w-[1400px]">
@@ -84,7 +84,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <dl className="mt-[clamp(1.5rem,3vh,2.75rem)] flex flex-wrap gap-x-10 gap-y-4 border-t border-white/12 pt-[clamp(1rem,2vh,1.75rem)]">
+          <dl className="mt-[clamp(1.25rem,3vh,2.75rem)] flex flex-wrap gap-x-10 gap-y-2 border-t border-white/12 pt-[clamp(0.9rem,2vh,1.75rem)] sm:gap-y-4">
             <Stat value="Any PDF" label="datasheet, catalog or product URL" />
             <Stat value="Every value" label="cited to a span of its source" />
             <Stat value="92%" label="confidence needed to auto-publish" />
@@ -144,11 +144,15 @@ export default function HomePage() {
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <div>
-      <dd className="font-mono text-[26px] leading-none font-bold text-white">
+    // Inline on a phone: three stacked two-line blocks cost about 200px
+    // of a 700px hero, which is most of the room the headline needs.
+    <div className="flex items-baseline gap-2.5 sm:block">
+      <dd className="font-mono text-[17px] leading-none font-bold whitespace-nowrap text-white sm:text-[26px]">
         {value}
       </dd>
-      <dt className="mt-2 text-[13px] text-white/50">{label}</dt>
+      <dt className="text-[12px] text-white/50 sm:mt-2 sm:text-[13px]">
+        {label}
+      </dt>
     </div>
   );
 }

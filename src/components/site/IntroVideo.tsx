@@ -127,7 +127,7 @@ export function IntroVideo() {
       role="dialog"
       aria-label="Introduction"
       className={cn(
-        "fixed inset-0 z-[200] grid place-items-center bg-black transition-opacity duration-500",
+        "fixed inset-0 z-[200] flex items-center justify-center overflow-hidden bg-black transition-opacity duration-500",
         leaving ? "pointer-events-none opacity-0" : "opacity-100",
       )}
     >
@@ -145,7 +145,7 @@ export function IntroVideo() {
           const v = e.currentTarget;
           if (v.duration) setProgress(v.currentTime / v.duration);
         }}
-        className="h-full w-full object-contain"
+        className="max-h-full max-w-full object-contain"
       />
 
       {/* Elapsed, so nobody has to wonder how long they are trapped. */}

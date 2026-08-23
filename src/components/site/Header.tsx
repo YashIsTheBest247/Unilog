@@ -76,33 +76,45 @@ export function Header() {
       </div>
 
       {/* The nav collapses on narrow screens; these keep the routes
-          reachable without a hamburger and its focus management. */}
-      <nav
-        aria-label="Sections"
-        className="mx-auto mt-2 flex max-w-[1400px] gap-1 overflow-x-auto px-1 md:hidden"
-      >
-        {NAV.map((item) => {
-          const active =
-            item.href === "/"
-              ? pathname === "/"
-              : pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "focus-ring shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition-colors",
-                active
-                  ? "border-transparent bg-mist-100 text-[var(--s-card)]"
-                  : "border-[var(--hairline)] text-mist-400",
-              )}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
+          reachable without a hamburger and its focus management.
+
+          It carries its own surface rather than sitting on nothing: the
+          header is sticky, so a transparent strip lets the page scroll
+          visibly through the chips. The right edge fades to signal that
+          the row scrolls, since the last item is deliberately clipped. */}
+      <div className="relative mx-auto mt-2 max-w-[1400px] md:hidden">
+        <nav
+          aria-label="Sections"
+          className="flex gap-1 overflow-x-auto rounded-full border border-[var(--hairline)] bg-[color-mix(in_srgb,var(--s-card)_92%,transparent)] px-1.5 py-1.5 shadow-[var(--shadow-card)] backdrop-blur-xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {NAV.map((item) => {
+            const active =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "focus-ring shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition-colors",
+                  active
+                    ? "bg-mist-100 text-[var(--s-card)]"
+                    : "text-mist-400",
+                )}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 right-0 w-10 rounded-r-full bg-gradient-to-l from-[var(--s-card)] to-transparent"
+        />
+      </div>
     </header>
   );
 }

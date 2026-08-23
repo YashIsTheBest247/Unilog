@@ -159,7 +159,7 @@ export function AskPanel() {
   const status = answer ? STATUS[answer.status] : null;
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
       {/* Left: what it reads.
           The user's own documents lead. The bundled sets sit behind a
           disclosure and vanish once anything has been attached. ------ */}
