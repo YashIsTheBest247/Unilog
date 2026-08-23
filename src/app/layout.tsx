@@ -24,10 +24,41 @@ const jetbrains = JetBrains_Mono({
 const DESCRIPTION =
   "Taxonomy-driven product enrichment with adversarial validation and attribute-level provenance. Every published value cites the exact span of the source it came from.";
 
+/**
+ * The canonical origin for Open Graph and metadata URLs.
+ *
+ * Every branch is guarded because this runs at module evaluation: a bad
+ * value here does not degrade the metadata, it throws before any page
+ * renders and fails the whole build. An environment variable that is
+ * *defined but empty* is the common case - `??` would happily pass ""
+ * to `new URL()` - so this tests for a usable value, not merely a
+ * present one, and parses inside a try.
+ */
+function resolveSiteUrl(): URL {
+  const candidates = [
+    process.env.NEXT_PUBLIC_SITE_URL?.trim(),
+    // Vercel supplies these, so a deployment gets correct absolute URLs
+    // with nothing configured at all.
+    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() &&
+      `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.trim()}`,
+    process.env.VERCEL_URL?.trim() &&
+      `https://${process.env.VERCEL_URL.trim()}`,
+  ];
+
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    try {
+      return new URL(candidate);
+    } catch {
+      // Malformed value: try the next source rather than failing the build.
+    }
+  }
+
+  return new URL("http://localhost:3000");
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  ),
+  metadataBase: resolveSiteUrl(),
   title: {
     default: "Unify · Product Intelligence",
     template: "%s · Unify",
