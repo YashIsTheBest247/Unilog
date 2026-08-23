@@ -13,17 +13,47 @@ import { cn } from "@/lib/utils";
  */
 let alreadyPlayed = false;
 
+export const INTRO_KEY = "unify.intro.lastShown";
+
+/** Local calendar day, so "once a day" means the viewer's day. */
+export function todayStamp() {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/** `?intro=1` forces a replay, which is what you want when recording. */
+function forced() {
+  return new URLSearchParams(window.location.search).get("intro") === "1";
+}
+
+export function shouldPlayIntro() {
+  if (window.location.pathname !== "/") return false;
+  if (forced()) return true;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+  try {
+    return window.localStorage.getItem(INTRO_KEY) !== todayStamp();
+  } catch {
+    // Storage blocked: play it rather than never showing it at all.
+    return true;
+  }
+}
+
 /**
  * Runs before first paint so the landing page never flashes behind the
- * splash. It only arms on the home route, and stands down for anyone who
- * has asked for reduced motion. The React component below clears the
- * attribute once it has taken over, and a timeout clears it regardless
- * so a scripting failure can never leave the page permanently covered.
+ * splash. The condition here must match `shouldPlayIntro` exactly — if
+ * the guard arms for a load the component then declines, the page would
+ * sit blacked out until the failsafe timeout fires.
  */
 export const INTRO_INIT = `(function(){try{
 if(location.pathname!=="/")return;
-if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
-if(sessionStorage.getItem("unify.intro.skip")==="1")return;
+var force=new URLSearchParams(location.search).get("intro")==="1";
+if(!force){
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  var d=new Date(),p=function(n){return String(n).padStart(2,"0")};
+  var today=d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
+  if(localStorage.getItem("unify.intro.lastShown")===today)return;
+}
 document.documentElement.setAttribute("data-intro","pending");
 setTimeout(function(){document.documentElement.removeAttribute("data-intro");},6000);
 }catch(e){}})();`;
@@ -48,16 +78,21 @@ export function IntroVideo() {
   }, []);
 
   useEffect(() => {
-    if (alreadyPlayed || pathname !== "/") {
-      document.documentElement.removeAttribute("data-intro");
-      return;
-    }
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (alreadyPlayed || pathname !== "/" || !shouldPlayIntro()) {
       document.documentElement.removeAttribute("data-intro");
       return;
     }
 
     alreadyPlayed = true;
+
+    // Stamped on show, not on finish, so refreshing midway through does
+    // not start it over.
+    try {
+      window.localStorage.setItem(INTRO_KEY, todayStamp());
+    } catch {
+      // A blocked store just means it plays again next load.
+    }
+
     setVisible(true);
     document.body.style.overflow = "hidden";
   }, [pathname]);
