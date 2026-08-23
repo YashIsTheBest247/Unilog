@@ -1,0 +1,61 @@
+flowchart LR
+  subgraph SRC["Sources"]
+    A1[PDF datasheet]
+    A2[Product URL]
+    A3[Pasted spec block]
+    A4[(Cached corpus)]
+  end
+
+  subgraph ING["Ingest & Retrieve"]
+    B1[/api/ingest\nunpdf + HTML to text/]
+    B2[Source authority ranking]
+    B3{{Taxonomy\nclass to attribute schema}}
+    B4[(Evidence pool\nexcerpt + char offsets)]
+  end
+
+  subgraph PIPE["Pipeline - 8 stages"]
+    C1[Classify]
+    C2[Retrieve]
+    C3[Extract\nschema-constrained, cited]
+    C4[Normalize\nunits, enums, ranges]
+    C5[Critique\nadversarial refutation]
+    C6[Resolve\nconflicts + confidence]
+    C7{Gate\n>=92% publish}
+    C8[Compose\nSEO, synonyms, facets]
+  end
+
+  subgraph MODEL["Model layer"]
+    M1[Gemini 3.7 Flash\nclassify, normalize]
+    M2[Gemini 3.1 Pro\nextract, critique, copy]
+    M3[Deterministic reader\nno API key required]
+    M4[[withFallback\nmodel failure degrades]]
+  end
+
+  subgraph OUT["Outputs"]
+    D1[Attribute record\nvalue + span + confidence]
+    D2[(Workspace\nbrowser-held catalogue)]
+    D3[Search, facets, SEO copy]
+    D4[Knowledge graph\n90 nodes / 220 edges]
+    D5[[Human review queue]]
+  end
+
+  A1 --> B1
+  A2 --> B1
+  A3 --> B1
+  A4 --> B2
+  B1 --> B2 --> B4
+  B3 --> C3
+  B4 --> C3
+  C1 --> C2 --> C3 --> C4 --> C5 --> C6 --> C7
+  C7 -->|publish| C8 --> D1
+  C7 -->|review| D5
+  C7 -->|reject| X[Dropped, logged with reason]
+  C1 -.-> M1
+  C4 -.-> M1
+  C3 -.-> M2
+  C5 -.-> M2
+  M1 -.-> M4
+  M2 -.-> M4
+  M4 -.-> M3
+  D1 --> D2 --> D3
+  D2 --> D4

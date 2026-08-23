@@ -13,9 +13,33 @@ import { useEffect, useRef, useState } from "react";
  */
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  return <Enter key={pathname}>{children}</Enter>;
+}
+
+/**
+ * Drops the animating class once the entrance finishes.
+ *
+ * This matters beyond tidiness: an element keeps a computed transform
+ * while the animation is filled, and a transform - even an identity one
+ * - makes that element the containing block for every `position: fixed`
+ * descendant. Left in place it silently breaks modals, drawers and
+ * anything else that expects to be sized against the viewport.
+ */
+function Enter({ children }: { children: React.ReactNode }) {
+  const [running, setRunning] = useState(true);
+
+  useEffect(() => {
+    // If the animation never fires - reduced motion, a hidden tab - do
+    // not leave the transform in place forever.
+    const t = window.setTimeout(() => setRunning(false), 900);
+    return () => window.clearTimeout(t);
+  }, []);
 
   return (
-    <div key={pathname} className="page-enter">
+    <div
+      className={running ? "page-enter" : undefined}
+      onAnimationEnd={() => setRunning(false)}
+    >
       {children}
     </div>
   );

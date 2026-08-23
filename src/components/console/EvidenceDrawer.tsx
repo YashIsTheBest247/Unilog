@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type {
   AttributeValue,
   EnrichedProduct,
@@ -75,6 +76,14 @@ export function EvidenceDrawer({
     [product.sources],
   );
 
+  // Portalled to the body on purpose. A modal is `position: fixed`, and a
+  // fixed element resolves against the nearest ancestor carrying a
+  // transform rather than the viewport. The page-transition wrapper has
+  // one, which sized this panel against the full scroll height of the
+  // document and left its content unreachable below the fold.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const panelRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const returnFocusTo = useRef<HTMLElement | null>(null);
@@ -126,11 +135,11 @@ export function EvidenceDrawer({
     };
   }, [attribute, onClose, trapFocus]);
 
-  if (!attribute) return null;
+  if (!attribute || !mounted) return null;
 
   const spec = product.taxonomy.attributes.find((s) => s.key === attribute.key);
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[60] flex justify-end">
       <button
         type="button"
@@ -373,6 +382,7 @@ export function EvidenceDrawer({
           </section>
         </div>
       </aside>
-    </div>
+    </div>,
+    document.body,
   );
 }
