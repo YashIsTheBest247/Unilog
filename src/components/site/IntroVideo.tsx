@@ -74,6 +74,7 @@ export function IntroVideo() {
     window.setTimeout(() => {
       setVisible(false);
       document.body.style.overflow = "";
+      document.documentElement.style.scrollbarGutter = "";
     }, 480);
   }, []);
 
@@ -95,6 +96,10 @@ export function IntroVideo() {
 
     setVisible(true);
     document.body.style.overflow = "hidden";
+    // The reserved scrollbar gutter sits outside the fixed overlay and
+    // shows as a pale strip down the right edge. Nothing scrolls while
+    // the splash is up, so the gutter is not needed.
+    document.documentElement.style.scrollbarGutter = "auto";
   }, [pathname]);
 
   useEffect(() => {
@@ -131,6 +136,16 @@ export function IntroVideo() {
         leaving ? "pointer-events-none opacity-0" : "opacity-100",
       )}
     >
+      {/* Only visible in the portrait case below, where the film is
+          letterboxed rather than cropped. A blurred still of the film
+          fills the gap so it reads as a vignette, not a black bar. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 scale-125 bg-cover bg-center blur-3xl"
+        style={{ backgroundImage: "url('/intro-poster.jpg')" }}
+      />
+      <div aria-hidden className="absolute inset-0 bg-black/55" />
+
       <video
         ref={videoRef}
         src="/intro.mp4"
@@ -145,7 +160,15 @@ export function IntroVideo() {
           const v = e.currentTarget;
           if (v.duration) setProgress(v.currentTime / v.duration);
         }}
-        className="max-h-full max-w-full object-contain"
+        className={cn(
+          "relative h-full w-full",
+          // Cover fills the screen edge to edge, cropping the long axis.
+          // Only once the viewport is at least 5:4 though: the film is
+          // 16:9, and on a portrait phone covering would crop roughly
+          // three quarters of the width and cut the logo in half. Below
+          // that threshold it stays contained over the blurred backdrop.
+          "object-contain [@media(min-aspect-ratio:5/4)]:object-cover",
+        )}
       />
 
       {/* Elapsed, so nobody has to wonder how long they are trapped. */}
